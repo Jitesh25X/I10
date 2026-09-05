@@ -1,32 +1,69 @@
-# React + TypeScript + Vite
+# Aarambh — Clubs Orientation Website
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Official website for **Aarambh**, the university clubs orientation event at Siksha 'O' Anusandhan (SOA) / ITER.
 
-Currently, two official plugins are available:
+## 🚀 Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Framework**: React 19 + TypeScript + Vite
+- **Styling**: Tailwind CSS + Framer Motion
+- **Icons**: Lucide React
+- **Routing**: React Router v7
+- **Typography**: `@fontsource/bricolage-grotesque`, `cinzel`, `playfair-display`, `inter`
 
-## React Compiler
+## 📁 Project Structure
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```
+├── docs/                   # Product Requirement Documents & Architecture specs
+│   ├── PRD.md
+│   └── PRD2.md
+├── public/                 # Static assets served directly
+│   ├── clubs/              # Official club logos (kebab-case)
+│   ├── gallery/            # Past event photo gallery
+│   ├── poster-assets/      # Background stars, event posters
+│   └── logo.png            # Aarambh event logo & favicon
+├── src/
+│   ├── assets/             # Bundled static assets
+│   ├── components/
+│   │   ├── agenda/         # Agenda components (DayTabs, ScheduleEntry)
+│   │   ├── clubs/          # Club cards, filters, detail views
+│   │   ├── gallery/        # Masonry grid, Lightbox
+│   │   ├── hero/           # StarField, ShootingComet, CustomCursor
+│   │   ├── layout/         # Navbar, Footer, PageWrapper
+│   │   ├── stats/          # StatsSection, StatCard
+│   │   └── ui/             # Reusable UI primitives (Button, Badge)
+│   ├── data/               # Static data collections (clubs, schedule, stats)
+│   ├── hooks/              # Custom React hooks (useCountdown, useCountUp, useCustomCursor)
+│   ├── pages/              # Route views (Home, Clubs, ClubDetail, Agenda, Apply, About)
+│   ├── types/              # TypeScript interfaces & types
+│   ├── App.tsx             # Root router & layout
+│   └── main.tsx            # Application entry point
+├── index.html              # HTML shell
+├── package.json            # Dependencies & scripts
+├── tailwind.config.js      # Tailwind design system configuration
+├── tsconfig.json           # TypeScript project references
+├── tsconfig.app.json       # App TypeScript configuration
+├── tsconfig.node.json      # Node/Vite tooling TypeScript configuration
+└── vite.config.ts          # Vite build configuration
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+## 🛠️ Development
+
+Install dependencies:
+```bash
+npm install
+```
+
+Start the development server:
+```bash
+npm run dev
+```
+
+Build for production:
+```bash
+npm run build
+```
+
+Run linter:
+```bash
+npm run lint
+```
