@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-background-dark text-text-primary font-sans antialiased;
+    background: linear-gradient(135deg, theme('colors.background.dark') 0%, theme('colors.background.mid') 50%, theme('colors.background.light') 100%);
+    min-height: 100vh;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-accent-gold via-accent-blue to-accent-purple;
+  }
+  
+  .glass-pill {
+    @apply bg-accent-purple/15 backdrop-blur-md border border-accent-gold/20 shadow-lg rounded-full;
+  }
+}
