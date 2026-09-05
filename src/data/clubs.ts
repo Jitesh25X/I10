@@ -38,7 +38,7 @@ export const clubs: Club[] = [
     id: "gfg-iter",
     name: "GFG Student Chapter ITER",
     category: "Technical",
-    logoUrl: "/clubs/gfg.jpeg",
+    logoUrl: "/clubs/gfg.png",
     tagline: "Learn, Practice, and Excel in tech.",
     about: "The official GeeksforGeeks student community body at ITER provides structured roadmaps, interview preparation sessions, algorithmic puzzles, and core subject revisions for aspiring engineers.",
     achievements: ["Campus Coding League 2025", "Interview Prep Bootcamp with industry mentors", "Over 300 active campus members"],
@@ -203,7 +203,7 @@ export const clubs: Club[] = [
     id: "jaago",
     name: "Jaago",
     category: "Other",
-    logoUrl: "/clubs/jaago.gif",
+    logoUrl: "/clubs/jaago.png",
     tagline: "Uddharedaatmanaatmanam — Rise and Empower.",
     about: "Jaago is ITER's youth social welfare initiative working to bring meaningful change in society through education for underprivileged children, clothing drives, and healthcare initiatives.",
     achievements: ["Mega Blood Donation Drive (500+ units collected)", "Weekend Education Drive for Underprivileged Kids", "Blanket Distribution Winter Drives"],
@@ -229,6 +229,17 @@ export const clubs: Club[] = [
     tagline: "Voice of SOA Community Radio 90.4 FM.",
     about: "SOA Radio Club brings student voices to the airwaves through Community Radio 90.4 FM, producing podcasts, RJ shows, interviews, cultural segments, and campus news bulletins.",
     achievements: ["Daily Live Campus Broadcasts", "Aarambh Live Studio Coverage", "Student RJ of the Year Accolades"],
+    instagramUrl: "https://instagram.com",
+    applyFormUrl: "https://forms.google.com"
+  },
+  {
+    id: "ncc",
+    name: "NCC ITER",
+    category: "Other",
+    logoUrl: "/clubs/ncc.png",
+    tagline: "Unity and Discipline.",
+    about: "The National Cadet Corps (NCC) at ITER develops character, comradeship, discipline, leadership, and the ideals of selfless service amongst young students, fostering leadership and adventure training.",
+    achievements: ["Republic Day Camp (RDC) & Thal Sainik Camp (TSC) Participation", "State Level Drill & Shooting Honors", "Community Development and Disaster Relief Training"],
     instagramUrl: "https://instagram.com",
     applyFormUrl: "https://forms.google.com"
   }
