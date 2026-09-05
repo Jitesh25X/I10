@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { Navbar } from './Navbar';
 import { Footer } from './Footer';
+import { CosmicBackground } from './CosmicBackground';
 
 export const PageWrapper = ({
   children,
@@ -10,10 +11,11 @@ export const PageWrapper = ({
   fullWidth?: boolean;
 }) => {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen relative overflow-x-hidden">
+      <CosmicBackground />
       <Navbar />
       <main
-        className={`flex-grow w-full ${
+        className={`flex-grow w-full relative z-10 ${
           fullWidth ? '' : 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28'
         } pb-8`}
       >

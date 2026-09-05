@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 
 export const Footer = () => {
   return (
-    <footer className="border-t border-white/10 bg-background-dark/50 py-10 mt-12">
+    <footer className="border-t border-white/10 bg-background-dark/50 py-10 mt-12 relative z-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center space-y-4">
         <Link to="/" className="inline-block group">
           <img 

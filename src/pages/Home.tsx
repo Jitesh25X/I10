@@ -2,8 +2,6 @@ import { PageWrapper } from '../components/layout/PageWrapper';
 import { useCountdown } from '../hooks/useCountdown';
 import { Button } from '../components/ui/Button';
 import { motion } from 'framer-motion';
-import { StarField } from '../components/hero/StarField';
-import { ShootingComet } from '../components/hero/ShootingComet';
 import { ShootingStarFromLogo } from '../components/hero/ShootingStarFromLogo';
 import { StatsSection } from '../components/stats/StatsSection';
 import { ChevronDown } from 'lucide-react';
@@ -16,16 +14,7 @@ export const Home = () => {
   return (
     <PageWrapper fullWidth>
       {/* Full-Screen Immersive Hero Section */}
-      <section className="relative w-full min-h-screen flex flex-col items-center justify-center text-center overflow-hidden px-4 sm:px-6 lg:px-8 pt-20 pb-24">
-        {/* Cosmic Ambient Background Glows */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-background-mid/50 via-background-dark/95 to-background-dark pointer-events-none" />
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] md:w-[1100px] h-[400px] md:h-[650px] bg-accent-purple/20 rounded-full blur-[140px] pointer-events-none" />
-        <div className="absolute top-1/3 right-1/4 w-[350px] md:w-[600px] h-[350px] md:h-[600px] bg-accent-gold/15 rounded-full blur-[120px] pointer-events-none" />
-        <div className="absolute bottom-1/4 left-1/4 w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-accent-blue/15 rounded-full blur-[120px] pointer-events-none" />
-
-        {/* Full-screen star field & shooting comets */}
-        <StarField />
-        <ShootingComet />
+      <section className="relative w-full min-h-screen flex flex-col items-center justify-center text-center px-4 sm:px-6 lg:px-8 pt-20 pb-24">
 
         <motion.div
           initial={{ opacity: 0, y: 25 }}
@@ -99,25 +88,24 @@ export const Home = () => {
                 See Agenda
               </Button>
             )}
-            <Button href="/apply" variant="outline" className="w-full sm:w-auto">
-              Apply Now
-            </Button>
           </div>
         </motion.div>
 
         {/* Scroll Indicator */}
-        <motion.a
-          href="#explore"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: [0.4, 1, 0.4], y: [0, 6, 0] }}
-          transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center text-text-muted hover:text-white transition-colors group z-20 cursor-pointer"
-        >
-          <span className="text-[10px] font-display tracking-[0.25em] uppercase mb-1 group-hover:text-accent-gold transition-colors">
-            Scroll Down
-          </span>
-          <ChevronDown size={18} className="text-accent-gold" />
-        </motion.a>
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center z-20">
+          <motion.a
+            href="#explore"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: [0.4, 1, 0.4], y: [0, 6, 0] }}
+            transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
+            className="flex flex-col items-center text-center text-text-muted hover:text-white transition-colors group cursor-pointer"
+          >
+            <span className="text-[10px] font-display tracking-[0.25em] pl-[0.25em] uppercase mb-1 group-hover:text-accent-gold transition-colors text-center">
+              Scroll Down
+            </span>
+            <ChevronDown size={18} className="text-accent-gold" />
+          </motion.a>
+        </div>
       </section>
 
       {/* Main Content Body */}

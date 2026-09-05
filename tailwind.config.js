@@ -8,10 +8,12 @@ export default {
     extend: {
       colors: {
         background: {
-          dark: '#1A0A3D',
-          mid: '#3B1A6B',
-          light: '#5A2D8C',
-          goldHighlight: '#3D2A1A'
+          dark: '#0B0B2E',
+          mid: '#12103A',
+          light: '#1B184F',
+          goldHighlight: '#3D2A1A',
+          navy: '#0B0B2E',
+          indigo: '#12103A',
         },
         accent: {
           purple: '#6B46C1',

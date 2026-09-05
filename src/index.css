@@ -5,7 +5,7 @@
 @layer base {
   body {
     @apply bg-background-dark text-text-primary font-sans antialiased;
-    background: linear-gradient(135deg, theme('colors.background.dark') 0%, theme('colors.background.mid') 50%, theme('colors.background.light') 100%);
+    background: linear-gradient(135deg, theme('colors.background.dark') 0%, theme('colors.background.mid') 100%);
     min-height: 100vh;
   }
 }

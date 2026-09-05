@@ -445,7 +445,7 @@ aarambh-website/
 **Visual style:** Cosmic/celestial, premium event-poster feel — directly derived from the official Aarambh "Coming Soon" poster (space background with nebula swirls, star field, and a gold-blue-purple gradient wordmark with a shooting-star flourish). The full site (not just the hero) should carry the poster's palette and star texture for visual consistency.
 
 **Color palette (purple-gold direction, per poster):**
-- Background base: a purple-dominant gradient rather than flat navy-black — e.g., `#1A0A3D` → `#3B1A6B` → `#5A2D8C`, with warm gold undertones bleeding in at edges/accents (`#3D2A1A`–`#4A2D1F` tones) to match the poster's warm nebula highlights
+- Background base: Deep space navy/indigo gradient — `#0B0B2E` – `#12103A`, with warm gold undertones bleeding in at edges/accents (`#3D2A1A`–`#4A2D1F` tones) to match the poster's warm nebula highlights
 - Accent purple: `#6B46C1`
 - Accent blue: `#3B82F6` (secondary accent, from the wordmark's blue side)
 - Accent gold: `#F2C14E` (primary accent — CTAs, stat highlights, Apply buttons, cursor star)

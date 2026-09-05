@@ -27,7 +27,6 @@ export const Navbar = () => {
   ];
   
   const rightLinks = [
-    { name: 'Apply', path: '/apply' },
     { name: 'About', path: '/about' },
   ];
   
