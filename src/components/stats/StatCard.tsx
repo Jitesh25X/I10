@@ -18,24 +18,25 @@ export const StatCard = ({ stat }: { stat: Stat }) => {
       { threshold: 0.5 }
     );
 
-    if (ref.current) {
-      observer.observe(ref.current);
+    const currentRef = ref.current;
+    if (currentRef) {
+      observer.observe(currentRef);
     }
 
     return () => {
-      if (ref.current) observer.unobserve(ref.current);
+      if (currentRef) observer.unobserve(currentRef);
     };
   }, [hasTriggered]);
 
   return (
     <div 
       ref={ref}
-      className="flex flex-col items-center justify-center p-6 bg-white/5 border border-white/10 rounded-3xl backdrop-blur-sm transition-transform hover:scale-105"
+      className="flex flex-col items-center justify-center p-6 sm:p-8 glass-card-interactive select-none"
     >
-      <div className="text-4xl md:text-5xl font-bold text-gradient mb-2">
+      <div className="text-4xl sm:text-5xl md:text-6xl font-bold text-gradient mb-2 tabular-nums">
         {count}{stat.suffix}
       </div>
-      <div className="text-text-muted font-display tracking-widest text-sm uppercase text-center">
+      <div className="text-text-muted font-display tracking-widest text-xs sm:text-sm uppercase text-center">
         {stat.label}
       </div>
     </div>

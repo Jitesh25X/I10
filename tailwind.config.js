@@ -51,6 +51,15 @@ export default {
           '90%': { opacity: 1 },
           '100%': { transform: 'translate(-100vw, 100vh)', opacity: 0 },
         }
+      },
+      transitionTimingFunction: {
+        'smooth': 'cubic-bezier(0.16, 1, 0.3, 1)',
+        'spring': 'cubic-bezier(0.34, 1.25, 0.64, 1)',
+        'bounce-soft': 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+      },
+      transitionProperty: {
+        'glass': 'transform, background-color, border-color, box-shadow, opacity',
+        'transform-shadow': 'transform, box-shadow',
       }
     },
   },

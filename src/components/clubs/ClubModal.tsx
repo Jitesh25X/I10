@@ -97,27 +97,29 @@ export const ClubModal: React.FC<ClubModalProps> = ({ club, isOpen, onClose }) =
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+            style={{ transform: 'translate3d(0,0,0)', willChange: 'opacity' }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/75 backdrop-blur-sm cursor-pointer"
+            className="fixed inset-0 bg-black/75 backdrop-blur-md cursor-pointer"
           />
 
           {/* Modal Container */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 16 }}
+            initial={{ opacity: 0, scale: 0.94, y: 14 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 16 }}
-            transition={{ type: "spring", duration: 0.35, bounce: 0.1 }}
+            exit={{ opacity: 0, scale: 0.96, y: 10 }}
+            transition={{ type: "spring", damping: 28, stiffness: 350, mass: 0.75 }}
+            style={{ transform: 'translate3d(0,0,0)', willChange: 'transform, opacity' }}
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-2xl max-h-[88vh] flex flex-col bg-[#1f0f38] border border-accent-gold/25 rounded-2xl shadow-2xl shadow-black/60 overflow-hidden z-10"
+            className="relative w-full max-w-2xl max-h-[88vh] flex flex-col bg-[#16102e]/95 backdrop-blur-2xl border border-accent-gold/30 rounded-2xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8),inset_0_1px_1px_0_rgba(255,255,255,0.15)] overflow-hidden z-10"
           >
             {/* Top decorative gradient bar */}
             <div className="h-1.5 w-full bg-gradient-to-r from-accent-purple via-accent-gold to-accent-blue flex-shrink-0" />
 
             {/* Header with Close & Share */}
-            <div className="flex items-center justify-between px-6 pt-5 pb-3 border-b border-white/10 flex-shrink-0 bg-background-dark/40">
-              <div className="flex items-center gap-2">
-                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${categoryStyle.bg} ${categoryStyle.text} ${categoryStyle.border}`}>
+            <div className="flex flex-wrap items-center justify-between gap-3 px-6 pt-5 pb-3.5 border-b border-white/10 flex-shrink-0 bg-background-dark/50">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${categoryStyle.bg} ${categoryStyle.text} ${categoryStyle.border}`}>
                   {club.category}
                 </span>
                 {club.applyFormUrl ? (
@@ -137,7 +139,7 @@ export const ClubModal: React.FC<ClubModalProps> = ({ club, isOpen, onClose }) =
                   type="button"
                   onClick={handleCopyLink}
                   title="Copy link to this club"
-                  className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-text-muted hover:text-white transition-colors border border-white/10 text-xs flex items-center gap-1.5"
+                  className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-text-muted hover:text-white transition-colors border border-white/10 text-xs flex items-center gap-1.5"
                 >
                   {copied ? <Check size={15} className="text-emerald-400" /> : <Share2 size={15} />}
                   <span className="hidden sm:inline">{copied ? "Copied!" : "Share"}</span>
@@ -146,7 +148,7 @@ export const ClubModal: React.FC<ClubModalProps> = ({ club, isOpen, onClose }) =
                   type="button"
                   onClick={onClose}
                   aria-label="Close modal"
-                  className="p-2 rounded-lg bg-white/5 hover:bg-white/15 text-text-muted hover:text-white transition-colors border border-white/10 focus:outline-none focus:ring-2 focus:ring-accent-gold"
+                  className="p-2 rounded-xl bg-white/5 hover:bg-white/15 text-text-muted hover:text-white transition-colors border border-white/10 focus:outline-none focus:ring-2 focus:ring-accent-gold"
                 >
                   <X size={18} />
                 </button>
@@ -202,13 +204,13 @@ export const ClubModal: React.FC<ClubModalProps> = ({ club, isOpen, onClose }) =
                     </p>
                   </div>
 
-                  <div className="flex flex-wrap items-center gap-2.5 pt-1 sm:pt-0">
+                  <div className="flex flex-wrap items-center gap-2.5 pt-2 sm:pt-0">
                     {club.applyFormUrl ? (
                       <a
                         href={club.applyFormUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg bg-accent-gold hover:bg-yellow-400 text-background-dark font-bold text-sm shadow-md hover:shadow-accent-gold/25 transition-all"
+                        className="h-10 inline-flex items-center justify-center gap-2 px-5 rounded-xl bg-accent-gold hover:bg-yellow-400 text-background-dark font-bold text-sm shadow-md hover:shadow-accent-gold/25 transition-all"
                       >
                         Apply / Join Now
                         <ExternalLink size={15} />
@@ -216,7 +218,7 @@ export const ClubModal: React.FC<ClubModalProps> = ({ club, isOpen, onClose }) =
                     ) : (
                       <button
                         disabled
-                        className="inline-flex items-center justify-center px-4 py-2.5 rounded-lg bg-white/10 text-text-muted font-medium text-sm cursor-not-allowed opacity-75"
+                        className="h-10 inline-flex items-center justify-center px-4 rounded-xl bg-white/10 text-text-muted font-medium text-sm cursor-not-allowed opacity-75"
                       >
                         Applications Opening Soon
                       </button>
@@ -227,7 +229,7 @@ export const ClubModal: React.FC<ClubModalProps> = ({ club, isOpen, onClose }) =
                         href={club.instagramUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-white/10 hover:bg-white/20 text-white font-medium text-sm border border-white/15 transition-colors"
+                        className="h-10 inline-flex items-center justify-center gap-2 px-4 rounded-xl bg-white/10 hover:bg-white/20 text-white font-medium text-sm border border-white/15 transition-colors"
                       >
                         <InstagramIcon className="w-4 h-4 text-pink-400" />
                         Instagram
@@ -261,12 +263,12 @@ export const ClubModal: React.FC<ClubModalProps> = ({ club, isOpen, onClose }) =
                     {club.achievements.map((item, idx) => (
                       <div 
                         key={idx}
-                        className="flex items-start gap-3 bg-white/5 border border-white/10 rounded-lg p-3 text-xs sm:text-sm text-text-primary"
+                        className="flex items-start gap-3 bg-white/5 border border-white/10 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm text-text-primary"
                       >
                         <div className="p-1 rounded bg-accent-purple/30 text-accent-gold flex-shrink-0 mt-0.5">
                           <Check size={14} />
                         </div>
-                        <span>{item}</span>
+                        <span className="leading-snug">{item}</span>
                       </div>
                     ))}
                   </div>
@@ -305,7 +307,7 @@ export const ClubModal: React.FC<ClubModalProps> = ({ club, isOpen, onClose }) =
                             </span>
                           </div>
                         </div>
-                        <span className="self-start sm:self-center px-2.5 py-1 rounded-full bg-accent-blue/20 text-accent-blue border border-accent-blue/30 text-xs font-medium whitespace-nowrap">
+                        <span className="self-start sm:self-center px-2.5 py-1 rounded-full bg-accent-blue/20 text-accent-blue border border-accent-blue/30 text-xs font-semibold whitespace-nowrap">
                           Live Event
                         </span>
                       </div>
@@ -323,7 +325,7 @@ export const ClubModal: React.FC<ClubModalProps> = ({ club, isOpen, onClose }) =
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white font-medium text-sm transition-colors"
+                className="px-5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-sm transition-colors"
               >
                 Close
               </button>
