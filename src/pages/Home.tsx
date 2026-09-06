@@ -5,11 +5,14 @@ import { motion } from 'framer-motion';
 import { ShootingStarFromLogo } from '../components/hero/ShootingStarFromLogo';
 import { StatsSection } from '../components/stats/StatsSection';
 import { ChevronDown } from 'lucide-react';
+import { usePreloader } from '../context/PreloaderContext';
 
 const EVENT_START_DATE = '2026-09-07T15:00:00'; // Match schedule data (Day 1 at 3:00 PM)
 
 export const Home = () => {
   const { days, hours, minutes, seconds, isLive } = useCountdown(EVENT_START_DATE);
+  const { isPreloaderActive, isHeroLogoVisible } = usePreloader();
+  const showHeroLogo = !isPreloaderActive || isHeroLogoVisible;
 
   return (
     <PageWrapper fullWidth>
@@ -17,22 +20,26 @@ export const Home = () => {
       <section className="relative w-full min-h-screen flex flex-col items-center justify-center text-center px-4 sm:px-6 lg:px-8 pt-24 pb-20">
 
         <motion.div
-          initial={{ opacity: 0, y: 25 }}
+          initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.8, ease: 'easeOut' }}
           className="max-w-4xl space-y-8 relative z-10 my-auto"
         >
           <p className="text-xs sm:text-sm md:text-base font-display font-medium tracking-[0.25em] text-text-muted uppercase">
             Institute of Technical Education &amp; Research presents
           </p>
 
-          <div className="relative inline-block max-w-xs sm:max-w-xl md:max-w-3xl mx-auto px-4">
+          <div
+            className={`relative inline-block max-w-xs sm:max-w-xl md:max-w-3xl mx-auto px-4 transition-opacity duration-700 ease-out ${
+              showHeroLogo ? 'opacity-100' : 'opacity-0'
+            }`}
+          >
             <img
               src="/logo.png"
               alt="Aarambh"
               className="w-full h-auto max-h-48 sm:max-h-64 md:max-h-72 object-contain mx-auto filter drop-shadow-[0_0_35px_rgba(107,70,193,0.55)] drop-shadow-[0_0_18px_rgba(242,193,78,0.4)]"
             />
-            <ShootingStarFromLogo />
+            {showHeroLogo && <ShootingStarFromLogo />}
           </div>
 
           <p className="text-lg sm:text-xl md:text-2xl text-text-primary/90 font-light max-w-2xl mx-auto leading-relaxed">

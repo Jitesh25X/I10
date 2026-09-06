@@ -1,0 +1,6 @@
+{
+  "name": "Aarambh — ITER Clubs Orientation",
+  "description": "Orientation website for ITER university clubs featuring club directories, schedules, and event details.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
