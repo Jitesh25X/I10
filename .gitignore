@@ -23,5 +23,7 @@ dist-ssr
 *.sln
 # Scratch & temporary media
 *.pdf
+!public/aarambh-schedule.pdf
 Screenshot*
 schedule_*
+

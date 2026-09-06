@@ -39,15 +39,24 @@ export const ClubModal: React.FC<ClubModalProps> = ({ club, isOpen, onClose }) =
     setCopied(false);
   }
 
-  // Lock body scroll when modal is open
+  // Lock body scroll and set modal open flags when modal is open
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
+      document.body.classList.add('modal-open');
+      document.body.setAttribute('data-modal-open', 'true');
+      window.dispatchEvent(new CustomEvent('modal-state-change', { detail: { isOpen: true } }));
     } else {
       document.body.style.overflow = '';
+      document.body.classList.remove('modal-open');
+      document.body.removeAttribute('data-modal-open');
+      window.dispatchEvent(new CustomEvent('modal-state-change', { detail: { isOpen: false } }));
     }
     return () => {
       document.body.style.overflow = '';
+      document.body.classList.remove('modal-open');
+      document.body.removeAttribute('data-modal-open');
+      window.dispatchEvent(new CustomEvent('modal-state-change', { detail: { isOpen: false } }));
     };
   }, [isOpen]);
 
@@ -87,7 +96,7 @@ export const ClubModal: React.FC<ClubModalProps> = ({ club, isOpen, onClose }) =
     <AnimatePresence>
       {isOpen && (
         <div 
-          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 md:p-6 overflow-y-auto"
+          className="fixed inset-0 z-[60] flex items-center justify-center p-3 sm:p-4 md:p-6 overflow-y-auto"
           role="dialog"
           aria-modal="true"
           aria-labelledby="club-modal-title"
@@ -295,7 +304,7 @@ export const ClubModal: React.FC<ClubModalProps> = ({ club, isOpen, onClose }) =
                           <div className="flex flex-wrap items-center gap-4 text-xs text-text-muted">
                             <span className="flex items-center gap-1">
                               <Calendar size={13} className="text-accent-blue" />
-                              {new Date(event.day).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                              {new Date(event.day + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
                             </span>
                             <span className="flex items-center gap-1">
                               <Clock size={13} className="text-accent-blue" />

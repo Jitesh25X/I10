@@ -6,7 +6,7 @@ import { ShootingStarFromLogo } from '../components/hero/ShootingStarFromLogo';
 import { StatsSection } from '../components/stats/StatsSection';
 import { ChevronDown } from 'lucide-react';
 
-const EVENT_START_DATE = '2026-10-12T09:00:00'; // Match schedule data
+const EVENT_START_DATE = '2026-09-07T15:00:00'; // Match schedule data (Day 1 at 3:00 PM)
 
 export const Home = () => {
   const { days, hours, minutes, seconds, isLive } = useCountdown(EVENT_START_DATE);

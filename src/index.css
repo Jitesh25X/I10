@@ -78,3 +78,25 @@
   }
 }
 
+/* Hide mobile header and hamburger navigation when club modal pop-up is active */
+@media (max-width: 767px) {
+  body:has([role="dialog"]) nav,
+  body:has([aria-modal="true"]) nav,
+  body.modal-open nav,
+  body[data-modal-open="true"] nav,
+  body:has([role="dialog"]) .mobile-nav-header,
+  body:has([role="dialog"]) .mobile-nav-menu,
+  body:has([aria-modal="true"]) .mobile-nav-header,
+  body:has([aria-modal="true"]) .mobile-nav-menu,
+  body.modal-open .mobile-nav-header,
+  body.modal-open .mobile-nav-menu,
+  body[data-modal-open="true"] .mobile-nav-header,
+  body[data-modal-open="true"] .mobile-nav-menu {
+    display: none !important;
+    pointer-events: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+  }
+}
+
+
