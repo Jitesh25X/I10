@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ExternalLink, Calendar, MapPin, Clock, Award, Sparkles, Check, Share2 } from 'lucide-react';
 import type { Club, Category } from '../../types';
@@ -31,23 +32,34 @@ export const ClubModal: React.FC<ClubModalProps> = ({ club, isOpen, onClose }) =
   const [imgError, setImgError] = useState(false);
   const [copied, setCopied] = useState(false);
   const [prevClubId, setPrevClubId] = useState<string | null>(club?.id ?? null);
+  const [activeClubData, setActiveClubData] = useState<Club | null>(club);
 
   // Sync state during render when club changes
   if (club && club.id !== prevClubId) {
     setPrevClubId(club.id);
+    setActiveClubData(club);
     setImgError(false);
     setCopied(false);
   }
 
-  // Lock body scroll when modal is open
+  // Lock body scroll and set modal open flags when modal is open
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
+      document.body.classList.add('modal-open');
+      document.body.setAttribute('data-modal-open', 'true');
+      window.dispatchEvent(new CustomEvent('modal-state-change', { detail: { isOpen: true } }));
     } else {
       document.body.style.overflow = '';
+      document.body.classList.remove('modal-open');
+      document.body.removeAttribute('data-modal-open');
+      window.dispatchEvent(new CustomEvent('modal-state-change', { detail: { isOpen: false } }));
     }
     return () => {
       document.body.style.overflow = '';
+      document.body.classList.remove('modal-open');
+      document.body.removeAttribute('data-modal-open');
+      window.dispatchEvent(new CustomEvent('modal-state-change', { detail: { isOpen: false } }));
     };
   }, [isOpen]);
 
@@ -66,28 +78,29 @@ export const ClubModal: React.FC<ClubModalProps> = ({ club, isOpen, onClose }) =
     };
   }, [isOpen, onClose]);
 
-  if (!club) return null;
+  const currentClub = club || activeClubData;
+  if (!currentClub) return null;
 
-  const clubEvents = schedule.filter(e => e.clubId === club.id);
-  const categoryStyle = CATEGORY_COLORS[club.category] || {
+  const clubEvents = schedule.filter(e => e.clubId === currentClub.id);
+  const categoryStyle = CATEGORY_COLORS[currentClub.category] || {
     bg: "bg-white/10",
     text: "text-white/80",
     border: "border-white/20"
   };
 
   const handleCopyLink = () => {
-    const url = `${window.location.origin}/clubs?club=${club.id}`;
+    const url = `${window.location.origin}/clubs?club=${currentClub.id}`;
     navigator.clipboard.writeText(url).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }).catch(() => {});
   };
 
-  return (
+  const modalContent = (
     <AnimatePresence>
       {isOpen && (
         <div 
-          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 md:p-6 overflow-y-auto"
+          className="fixed inset-0 z-[70] flex items-center justify-center p-3 sm:p-4 md:p-6 overflow-y-auto"
           role="dialog"
           aria-modal="true"
           aria-labelledby="club-modal-title"
@@ -120,9 +133,9 @@ export const ClubModal: React.FC<ClubModalProps> = ({ club, isOpen, onClose }) =
             <div className="flex flex-wrap items-center justify-between gap-3 px-6 pt-5 pb-3.5 border-b border-white/10 flex-shrink-0 bg-background-dark/50">
               <div className="flex flex-wrap items-center gap-2">
                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${categoryStyle.bg} ${categoryStyle.text} ${categoryStyle.border}`}>
-                  {club.category}
+                  {currentClub.category}
                 </span>
-                {club.applyFormUrl ? (
+                {currentClub.applyFormUrl ? (
                   <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1.5 animate-pulse" />
                     Applications Open
@@ -160,27 +173,27 @@ export const ClubModal: React.FC<ClubModalProps> = ({ club, isOpen, onClose }) =
               {/* Club Identity Header */}
               <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5">
                 <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-white/10 border border-accent-gold/30 flex items-center justify-center overflow-hidden flex-shrink-0 p-3 shadow-lg shadow-black/40">
-                  {!imgError && club.logoUrl ? (
+                  {!imgError && currentClub.logoUrl ? (
                     <img
-                      src={club.logoUrl}
-                      alt={`${club.name} logo`}
+                      src={currentClub.logoUrl}
+                      alt={`${currentClub.name} logo`}
                       className="w-full h-full object-contain"
                       onError={() => setImgError(true)}
                     />
                   ) : (
                     <span className="text-4xl font-bold text-accent-gold">
-                      {club.name.charAt(0)}
+                      {currentClub.name.charAt(0)}
                     </span>
                   )}
                 </div>
 
                 <div className="flex-1 text-center sm:text-left space-y-1.5">
                   <h2 id="club-modal-title" className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-                    {club.name}
+                    {currentClub.name}
                   </h2>
-                  {club.tagline && (
+                  {currentClub.tagline && (
                     <p className="text-accent-gold font-medium text-sm sm:text-base italic">
-                      "{club.tagline}"
+                      "{currentClub.tagline}"
                     </p>
                   )}
                   <p className="text-text-muted text-xs sm:text-sm">
@@ -195,19 +208,19 @@ export const ClubModal: React.FC<ClubModalProps> = ({ club, isOpen, onClose }) =
                   <div>
                     <h3 className="text-white font-bold text-base flex items-center gap-2">
                       <Sparkles size={16} className="text-accent-gold" />
-                      Join {club.name}
+                      Join {currentClub.name}
                     </h3>
                     <p className="text-text-muted text-xs mt-0.5">
-                      {club.applyFormUrl 
+                      {currentClub.applyFormUrl 
                         ? "Recruitment & registration form is active. Fill to apply now!" 
                         : "Official memberships & recruitments will open during Aarambh fest."}
                     </p>
                   </div>
 
                   <div className="flex flex-wrap items-center gap-2.5 pt-2 sm:pt-0">
-                    {club.applyFormUrl ? (
+                    {currentClub.applyFormUrl ? (
                       <a
-                        href={club.applyFormUrl}
+                        href={currentClub.applyFormUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="h-10 inline-flex items-center justify-center gap-2 px-5 rounded-xl bg-accent-gold hover:bg-yellow-400 text-background-dark font-bold text-sm shadow-md hover:shadow-accent-gold/25 transition-all"
@@ -224,9 +237,9 @@ export const ClubModal: React.FC<ClubModalProps> = ({ club, isOpen, onClose }) =
                       </button>
                     )}
 
-                    {club.instagramUrl && (
+                    {currentClub.instagramUrl && (
                       <a
-                        href={club.instagramUrl}
+                        href={currentClub.instagramUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="h-10 inline-flex items-center justify-center gap-2 px-4 rounded-xl bg-white/10 hover:bg-white/20 text-white font-medium text-sm border border-white/15 transition-colors"
@@ -247,20 +260,20 @@ export const ClubModal: React.FC<ClubModalProps> = ({ club, isOpen, onClose }) =
                 </h3>
                 <div className="bg-white/5 border border-white/10 rounded-xl p-4 sm:p-5">
                   <p className="text-text-primary/90 text-sm sm:text-base leading-relaxed whitespace-pre-line">
-                    {club.about}
+                    {currentClub.about}
                   </p>
                 </div>
               </div>
 
               {/* Highlights & Achievements */}
-              {club.achievements && club.achievements.length > 0 && (
+              {currentClub.achievements && currentClub.achievements.length > 0 && (
                 <div className="space-y-2.5">
                   <h3 className="text-sm uppercase tracking-wider font-semibold text-accent-gold flex items-center gap-2">
                     <Award size={16} className="text-accent-gold" />
                     <span>Highlights & Key Achievements</span>
                   </h3>
                   <div className="grid grid-cols-1 gap-2.5">
-                    {club.achievements.map((item, idx) => (
+                    {currentClub.achievements.map((item, idx) => (
                       <div 
                         key={idx}
                         className="flex items-start gap-3 bg-white/5 border border-white/10 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm text-text-primary"
@@ -295,7 +308,7 @@ export const ClubModal: React.FC<ClubModalProps> = ({ club, isOpen, onClose }) =
                           <div className="flex flex-wrap items-center gap-4 text-xs text-text-muted">
                             <span className="flex items-center gap-1">
                               <Calendar size={13} className="text-accent-blue" />
-                              {new Date(event.day).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                              {new Date(event.day + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
                             </span>
                             <span className="flex items-center gap-1">
                               <Clock size={13} className="text-accent-blue" />
@@ -335,4 +348,7 @@ export const ClubModal: React.FC<ClubModalProps> = ({ club, isOpen, onClose }) =
       )}
     </AnimatePresence>
   );
+
+  return typeof document !== 'undefined' ? createPortal(modalContent, document.body) : null;
 };
+

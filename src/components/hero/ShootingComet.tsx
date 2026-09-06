@@ -96,12 +96,12 @@ export const ShootingComet = () => {
           const isCyan = comet.colorType === 'cyan';
 
           const tailGradient = isGold
-            ? 'linear-gradient(90deg, transparent 0%, rgba(242,193,78,0.15) 30%, rgba(242,193,78,0.8) 80%, #ffffff 100%)'
+            ? 'linear-gradient(90deg, transparent 0%, rgba(232,184,75,0.15) 30%, rgba(232,184,75,0.8) 80%, #ffffff 100%)'
             : isCyan
-            ? 'linear-gradient(90deg, transparent 0%, rgba(59,130,246,0.15) 30%, rgba(59,130,246,0.8) 80%, #ffffff 100%)'
-            : 'linear-gradient(90deg, transparent 0%, rgba(168,85,247,0.15) 30%, rgba(242,193,78,0.75) 80%, #ffffff 100%)';
+            ? 'linear-gradient(90deg, transparent 0%, rgba(43,61,250,0.15) 30%, rgba(43,61,250,0.8) 80%, #ffffff 100%)'
+            : 'linear-gradient(90deg, transparent 0%, rgba(123,63,242,0.15) 30%, rgba(232,184,75,0.75) 80%, #ffffff 100%)';
 
-          const glowColor = isGold ? '#F2C14E' : isCyan ? '#3B82F6' : '#C084FC';
+          const glowColor = isGold ? '#e8b84b' : isCyan ? '#2b3dfa' : '#7b3ff2';
 
           return (
             <motion.div
