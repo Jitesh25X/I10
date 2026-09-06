@@ -93,39 +93,50 @@ export const Navbar = () => {
         </motion.div>
 
         {/* Mobile Navigation Header Bar */}
-        <motion.div 
-          layout
-          className={`md:hidden flex items-center ${!isScrolled ? 'justify-between' : 'justify-end'} w-full max-w-md mx-auto glass-pill px-4 py-2 pointer-events-auto transition-glass duration-300 ease-smooth`}
-        >
-          <AnimatePresence initial={false}>
-            {!isScrolled && (
-              <motion.div
-                key="mobile-header-logo"
-                initial={{ opacity: 0, width: 0, scale: 0.9 }}
-                animate={{ opacity: 1, width: 'auto', scale: 1 }}
-                exit={{ opacity: 0, width: 0, scale: 0.9 }}
-                transition={{ duration: 0.25, ease: 'easeOut' }}
-                className="overflow-hidden whitespace-nowrap flex items-center"
-              >
-                <Link to="/" onClick={handleLogoClick} className="flex items-center group transition-transform duration-200 ease-smooth active:scale-95 shrink-0" aria-label="Aarambh Home">
-                  <img 
-                    src="/logo.png" 
-                    alt="Aarambh" 
-                    className="h-7 w-auto object-contain drop-shadow-[0_0_10px_rgba(242,193,78,0.35)]" 
-                  />
-                </Link>
-              </motion.div>
-            )}
-          </AnimatePresence>
-          
-          <button
-            onClick={toggleMenu}
-            className="text-text-muted hover:text-white focus:outline-none p-1.5 rounded-lg hover:bg-white/10 transition-glass duration-200 ease-smooth active:scale-90"
-            aria-label="Toggle navigation menu"
+        <div className="md:hidden w-full max-w-md mx-auto flex justify-end pointer-events-none">
+          <motion.div 
+            layout
+            transition={{ type: "spring", damping: 30, stiffness: 350 }}
+            className={`flex items-center pointer-events-auto transition-glass duration-300 ease-smooth ${
+              !isScrolled 
+                ? 'w-full justify-between glass-pill px-4 py-2 rounded-full' 
+                : 'w-11 h-11 justify-center glass-pill rounded-full p-0 shadow-lg'
+            }`}
           >
-            {isOpen ? <X size={20} /> : <Menu size={20} />}
-          </button>
-        </motion.div>
+            <AnimatePresence initial={false}>
+              {!isScrolled && (
+                <motion.div
+                  key="mobile-header-logo"
+                  initial={{ opacity: 0, width: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, width: 'auto', scale: 1 }}
+                  exit={{ opacity: 0, width: 0, scale: 0.85 }}
+                  transition={{ duration: 0.2, ease: 'easeOut' }}
+                  className="overflow-hidden whitespace-nowrap flex items-center"
+                >
+                  <Link to="/" onClick={handleLogoClick} className="flex items-center group transition-transform duration-200 ease-smooth active:scale-95 shrink-0" aria-label="Aarambh Home">
+                    <img 
+                      src="/logo.png" 
+                      alt="Aarambh" 
+                      className="h-7 w-auto object-contain drop-shadow-[0_0_10px_rgba(242,193,78,0.35)]" 
+                    />
+                  </Link>
+                </motion.div>
+              )}
+            </AnimatePresence>
+            
+            <button
+              onClick={toggleMenu}
+              className={`text-text-muted hover:text-white focus:outline-none transition-glass duration-200 ease-smooth active:scale-90 flex items-center justify-center ${
+                !isScrolled 
+                  ? 'p-1.5 rounded-lg hover:bg-white/10' 
+                  : 'w-full h-full rounded-full hover:bg-white/10'
+              }`}
+              aria-label="Toggle navigation menu"
+            >
+              {isOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          </motion.div>
+        </div>
 
         {/* Mobile Dropdown Menu Box */}
         <AnimatePresence>

@@ -2,19 +2,9 @@ import type { Club } from "../types";
 
 export const clubs: Club[] = [
   {
-    id: "coding-ninjas",
-    name: "Coding Ninjas ITER",
-    category: "Technical",
-    logoUrl: "/clubs/coding-ninjas.png",
-    tagline: "Code, build, innovate.",
-    about: "Coding Ninjas 10X ITER is a premier technical society under the CSE department committed to fostering competitive programming, DSA mastery, and software development through workshops, hackathons, and coding sprints.",
-    achievements: ["Organized ITER Hackathon 2025", "100+ active competitive programmers", "Weekly coding contests on CodeStudio"],
-    instagramUrl: "https://instagram.com",
-    applyFormUrl: "https://forms.google.com"
-  },
-  {
     id: "codex",
     name: "Club Codex",
+    shortName: "Codex",
     category: "Technical",
     logoUrl: "/clubs/codex.png",
     tagline: "We code. We explore.",
@@ -24,8 +14,33 @@ export const clubs: Club[] = [
     applyFormUrl: "https://forms.google.com"
   },
   {
+    id: "coding-ninjas",
+    name: "Coding Ninjas ITER",
+    shortName: "Coding Ninjas",
+    category: "Technical",
+    logoUrl: "/clubs/coding-ninjas.png",
+    tagline: "Code, build, innovate.",
+    about: "Coding Ninjas 10X ITER is a premier technical society under the CSE department committed to fostering competitive programming, DSA mastery, and software development through workshops, hackathons, and coding sprints.",
+    achievements: ["Organized ITER Hackathon 2025", "100+ active competitive programmers", "Weekly coding contests on CodeStudio"],
+    instagramUrl: "https://instagram.com",
+    applyFormUrl: "https://forms.google.com"
+  },
+  {
+    id: "danza",
+    name: "Danza",
+    shortName: "Danza",
+    category: "Dance",
+    logoUrl: "/clubs/danza.png",
+    tagline: "The Western Dance Society of ITER.",
+    about: "Danza is ITER's premier western dance crew, known for energetic choreographies spanning hip-hop, contemporary, popping, breaking, and Bollywood at national inter-college fests.",
+    achievements: ["Winners of Inter-College Dance Battles 2025", "Headlining performance at Aarambh Cultural Night", "Best Choreography Award at Spring Fest"],
+    instagramUrl: "https://instagram.com",
+    applyFormUrl: "https://forms.google.com"
+  },
+  {
     id: "gdg-iter",
     name: "GDG on Campus ITER",
+    shortName: "GDGoC",
     category: "Technical",
     logoUrl: "/clubs/gdg.png",
     tagline: "Connect, Learn, and Grow with Google technologies.",
@@ -37,6 +52,7 @@ export const clubs: Club[] = [
   {
     id: "gfg-iter",
     name: "GFG Student Chapter ITER",
+    shortName: "GeeksForGeeks",
     category: "Technical",
     logoUrl: "/clubs/gfg.png",
     tagline: "Learn, Practice, and Excel in tech.",
@@ -48,6 +64,7 @@ export const clubs: Club[] = [
   {
     id: "ieee-iter",
     name: "IEEE SOA Student Branch",
+    shortName: "IEEE",
     category: "Technical",
     logoUrl: "/clubs/ieee.png",
     tagline: "Advancing Technology for Humanity.",
@@ -57,30 +74,9 @@ export const clubs: Club[] = [
     applyFormUrl: "https://forms.google.com"
   },
   {
-    id: "iter-robotics",
-    name: "ITER Robotics Club (IRC)",
-    category: "Technical",
-    logoUrl: "/clubs/irc.png",
-    tagline: "Innovate, Design, and Automate.",
-    about: "IRC is the university's flagship robotics and hardware innovation club. Members design, fabricate, and program autonomous rovers, combat bots, IoT gadgets, and embedded systems for national competitions.",
-    achievements: ["1st place at Techfest 2025 Bot Combat", "National Robotics Olympiad Finalists", "Autonomous Campus Rover Prototype"],
-    instagramUrl: "https://instagram.com",
-    applyFormUrl: "https://forms.google.com"
-  },
-  {
-    id: "soa-flying-club",
-    name: "SOA Flying Club",
-    category: "Technical",
-    logoUrl: "/clubs/soa-flying-club.png",
-    tagline: "Take Flight with Aeromodelling & Drone Innovation.",
-    about: "SOA Flying Club brings together aerospace enthusiasts, aeromodelling builders, and drone pilots to design RC aircraft, quadcopters, and autonomous aerial vehicles.",
-    achievements: ["State Drone Racing Championship Winners", "Annual Aero-Design Expo Showcase", "Custom drone surveillance projects"],
-    instagramUrl: "https://instagram.com",
-    applyFormUrl: "https://forms.google.com"
-  },
-  {
     id: "iec",
     name: "Innovation & Entrepreneurship Cell",
+    shortName: "Innovation & Entrepreneurship Cell (IEC)",
     category: "Other",
     logoUrl: "/clubs/iec.png",
     tagline: "Igniting ideas and building tomorrow's startups.",
@@ -90,19 +86,33 @@ export const clubs: Club[] = [
     applyFormUrl: "https://forms.google.com"
   },
   {
-    id: "danza",
-    name: "Danza",
-    category: "Dance",
-    logoUrl: "/clubs/danza.png",
-    tagline: "The Western Dance Society of ITER.",
-    about: "Danza is ITER's premier western dance crew, known for energetic choreographies spanning hip-hop, contemporary, popping, breaking, and Bollywood at national inter-college fests.",
-    achievements: ["Winners of Inter-College Dance Battles 2025", "Headlining performance at Aarambh Cultural Night", "Best Choreography Award at Spring Fest"],
+    id: "iter-robotics",
+    name: "ITER Robotics Club (IRC)",
+    shortName: "ITER Robotics Club",
+    category: "Technical",
+    logoUrl: "/clubs/irc.png",
+    tagline: "Innovate, Design, and Automate.",
+    about: "IRC is the university's flagship robotics and hardware innovation club. Members design, fabricate, and program autonomous rovers, combat bots, IoT gadgets, and embedded systems for national competitions.",
+    achievements: ["1st place at Techfest 2025 Bot Combat", "National Robotics Olympiad Finalists", "Autonomous Campus Rover Prototype"],
+    instagramUrl: "https://instagram.com",
+    applyFormUrl: "https://forms.google.com"
+  },
+  {
+    id: "jaago",
+    name: "Jaago",
+    shortName: "Jaago",
+    category: "Other",
+    logoUrl: "/clubs/jaago.png",
+    tagline: "Uddharedaatmanaatmanam — Rise and Empower.",
+    about: "Jaago is ITER's youth social welfare initiative working to bring meaningful change in society through education for underprivileged children, clothing drives, and healthcare initiatives.",
+    achievements: ["Mega Blood Donation Drive (500+ units collected)", "Weekend Education Drive for Underprivileged Kids", "Blanket Distribution Winter Drives"],
     instagramUrl: "https://instagram.com",
     applyFormUrl: "https://forms.google.com"
   },
   {
     id: "odanza",
     name: "O'Danza",
+    shortName: "Odanza",
     category: "Dance",
     logoUrl: "/clubs/odanza.png",
     tagline: "The Classical Beat of Odisha & Beyond.",
@@ -112,41 +122,9 @@ export const clubs: Club[] = [
     applyFormUrl: "https://forms.google.com"
   },
   {
-    id: "soa-music-club",
-    name: "SOA Music Club",
-    category: "Music",
-    logoUrl: "/clubs/soa-music-club.png",
-    tagline: "Where Melodies Come to Life.",
-    about: "SOA Music Club (SMC) unites passionate vocalists, percussionists, guitarists, and composers. From acoustic unplugged jam sessions to high-voltage rock band battles, SMC sets the campus rhythm.",
-    achievements: ["Battle of the Bands Winners 2025", "Annual Aarambh Unplugged Night", "Original campus music album release"],
-    instagramUrl: "https://instagram.com",
-    applyFormUrl: "https://forms.google.com"
-  },
-  {
-    id: "toneelstuk",
-    name: "Toneelstuk",
-    category: "Cultural",
-    logoUrl: "/clubs/toneelstuk.png",
-    tagline: "The Theatre & Dramatics Society.",
-    about: "Toneelstuk is the official dramatics society of ITER, bringing intense social street plays (nukkad natak), grand proscenium stage productions, and powerful mono-acts to life.",
-    achievements: ["Best Nukkad Natak at State Inter-University Fest", "Over 50+ stage and street performances", "National Youth Theatre Showcase"],
-    instagramUrl: "https://instagram.com",
-    applyFormUrl: "https://forms.google.com"
-  },
-  {
-    id: "soa-literary-club",
-    name: "SOA Literary Club",
-    category: "Literary",
-    logoUrl: "/clubs/soa-literary-club.png",
-    tagline: "Words, Thoughts, and Expression.",
-    about: "SOA Literary Club (SLC) is a vibrant society for orators, poets, quiz enthusiasts, and writers, hosting parliamentary debates, open mics, model UN conferences, and creative writing contests.",
-    achievements: ["Organized Annual SOA Model United Nations", "National Parliamentary Debate Finalists", "Published annual campus literary journal"],
-    instagramUrl: "https://instagram.com",
-    applyFormUrl: "https://forms.google.com"
-  },
-  {
     id: "soa-english-cafe",
     name: "SOA English Café",
+    shortName: "SOA English Cafe",
     category: "Literary",
     logoUrl: "/clubs/soa-english-cafe.png",
     tagline: "Learn Different. Express Confidently.",
@@ -156,19 +134,45 @@ export const clubs: Club[] = [
     applyFormUrl: "https://forms.google.com"
   },
   {
-    id: "srishti",
-    name: "Srishti",
-    category: "Cultural",
-    logoUrl: "/clubs/srishti.png",
-    tagline: "Brushing the Beyond — Art & Creativity.",
-    about: "Srishti is ITER's fine arts and creative design club. Members express themselves through sketching, watercolor, acrylics, digital illustrations, pottery, and vibrant campus wall murals.",
-    achievements: ["Annual Aarambh Art Exhibition", "Campus Wall Mural Project", "Art for Social Causes Charity Auction"],
+    id: "soa-flying-club",
+    name: "SOA Flying Club",
+    shortName: "SOA Flying Community",
+    category: "Technical",
+    logoUrl: "/clubs/soa-flying-club.png",
+    tagline: "Take Flight with Aeromodelling & Drone Innovation.",
+    about: "SOA Flying Club brings together aerospace enthusiasts, aeromodelling builders, and drone pilots to design RC aircraft, quadcopters, and autonomous aerial vehicles.",
+    achievements: ["State Drone Racing Championship Winners", "Annual Aero-Design Expo Showcase", "Custom drone surveillance projects"],
+    instagramUrl: "https://instagram.com",
+    applyFormUrl: "https://forms.google.com"
+  },
+  {
+    id: "soa-literary-club",
+    name: "SOA Literary Club",
+    shortName: "SOA Literary Club",
+    category: "Literary",
+    logoUrl: "/clubs/soa-literary-club.png",
+    tagline: "Words, Thoughts, and Expression.",
+    about: "SOA Literary Club (SLC) is a vibrant society for orators, poets, quiz enthusiasts, and writers, hosting parliamentary debates, open mics, model UN conferences, and creative writing contests.",
+    achievements: ["Organized Annual SOA Model United Nations", "National Parliamentary Debate Finalists", "Published annual campus literary journal"],
+    instagramUrl: "https://instagram.com",
+    applyFormUrl: "https://forms.google.com"
+  },
+  {
+    id: "soa-music-club",
+    name: "SOA Music Club",
+    shortName: "SOA Music Club (SMC)",
+    category: "Music",
+    logoUrl: "/clubs/soa-music-club.png",
+    tagline: "Where Melodies Come to Life.",
+    about: "SOA Music Club (SMC) unites passionate vocalists, percussionists, guitarists, and composers. From acoustic unplugged jam sessions to high-voltage rock band battles, SMC sets the campus rhythm.",
+    achievements: ["Battle of the Bands Winners 2025", "Annual Aarambh Unplugged Night", "Original campus music album release"],
     instagramUrl: "https://instagram.com",
     applyFormUrl: "https://forms.google.com"
   },
   {
     id: "spc",
     name: "SOA Photography Club (SPC)",
+    shortName: "SOA Photography Club",
     category: "Cultural",
     logoUrl: "/clubs/spc.png",
     tagline: "Explore Your Vision, Frame the World.",
@@ -178,8 +182,45 @@ export const clubs: Club[] = [
     applyFormUrl: "https://forms.google.com"
   },
   {
+    id: "soa-radio-club",
+    name: "SOA Radio Club",
+    shortName: "SOA Radio Club",
+    category: "Other",
+    logoUrl: "/clubs/soa-radio-club.png",
+    tagline: "Voice of SOA Community Radio 90.4 FM.",
+    about: "SOA Radio Club brings student voices to the airwaves through Community Radio 90.4 FM, producing podcasts, RJ shows, interviews, cultural segments, and campus news bulletins.",
+    achievements: ["Daily Live Campus Broadcasts", "Aarambh Live Studio Coverage", "Student RJ of the Year Accolades"],
+    instagramUrl: "https://instagram.com",
+    applyFormUrl: "https://forms.google.com"
+  },
+  {
+    id: "srishti",
+    name: "Srishti",
+    shortName: "Srishti",
+    category: "Cultural",
+    logoUrl: "/clubs/srishti.png",
+    tagline: "Brushing the Beyond — Art & Creativity.",
+    about: "Srishti is ITER's fine arts and creative design club. Members express themselves through sketching, watercolor, acrylics, digital illustrations, pottery, and vibrant campus wall murals.",
+    achievements: ["Annual Aarambh Art Exhibition", "Campus Wall Mural Project", "Art for Social Causes Charity Auction"],
+    instagramUrl: "https://instagram.com",
+    applyFormUrl: "https://forms.google.com"
+  },
+  {
+    id: "toneelstuk",
+    name: "Toneelstuk",
+    shortName: "Toneelstuk",
+    category: "Cultural",
+    logoUrl: "/clubs/toneelstuk.png",
+    tagline: "The Theatre & Dramatics Society.",
+    about: "Toneelstuk is the official dramatics society of ITER, bringing intense social street plays (nukkad natak), grand proscenium stage productions, and powerful mono-acts to life.",
+    achievements: ["Best Nukkad Natak at State Inter-University Fest", "Over 50+ stage and street performances", "National Youth Theatre Showcase"],
+    instagramUrl: "https://instagram.com",
+    applyFormUrl: "https://forms.google.com"
+  },
+  {
     id: "virtual-show-reel",
     name: "Virtual Show Reel (VSR)",
+    shortName: "VirtualShowreel (VS)",
     category: "Cultural",
     logoUrl: "/clubs/virtual-show-reel.png",
     tagline: "Cinematic Expressions and Visual Storytelling.",
@@ -191,6 +232,7 @@ export const clubs: Club[] = [
   {
     id: "vogue",
     name: "Vogue",
+    shortName: "Vogue (SOA Fashion Club)",
     category: "Cultural",
     logoUrl: "/clubs/vogue.png",
     tagline: "SOA Fashion & Lifestyle Society.",
@@ -200,46 +242,26 @@ export const clubs: Club[] = [
     applyFormUrl: "https://forms.google.com"
   },
   {
-    id: "jaago",
-    name: "Jaago",
+    id: "ncc",
+    name: "NCC ITER",
+    shortName: "NCC ITER",
     category: "Other",
-    logoUrl: "/clubs/jaago.png",
-    tagline: "Uddharedaatmanaatmanam — Rise and Empower.",
-    about: "Jaago is ITER's youth social welfare initiative working to bring meaningful change in society through education for underprivileged children, clothing drives, and healthcare initiatives.",
-    achievements: ["Mega Blood Donation Drive (500+ units collected)", "Weekend Education Drive for Underprivileged Kids", "Blanket Distribution Winter Drives"],
+    logoUrl: "/clubs/ncc.png",
+    tagline: "Unity and Discipline.",
+    about: "The National Cadet Corps (NCC) at ITER develops character, comradeship, discipline, leadership, and the ideals of selfless service amongst young students, fostering leadership and adventure training.",
+    achievements: ["Republic Day Camp (RDC) & Thal Sainik Camp (TSC) Participation", "State Level Drill & Shooting Honors", "Community Development and Disaster Relief Training"],
     instagramUrl: "https://instagram.com",
     applyFormUrl: "https://forms.google.com"
   },
   {
     id: "nss",
     name: "NSS ITER",
+    shortName: "NSS ITER",
     category: "Other",
     logoUrl: "/clubs/nss.png",
     tagline: "Not Me, But You.",
     about: "National Service Scheme (NSS) ITER unit engages student volunteers in community development, environmental conservation, health awareness campaigns, and disaster relief activities.",
     achievements: ["Swachh Bharat Abhiyan Cleanliness Drives", "1000+ Saplings Planted Across Campus in 2025", "Free Medical & Eye Checkup Camp for local communities"],
-    instagramUrl: "https://instagram.com",
-    applyFormUrl: "https://forms.google.com"
-  },
-  {
-    id: "soa-radio-club",
-    name: "SOA Radio Club",
-    category: "Other",
-    logoUrl: "/clubs/soa-radio-club.png",
-    tagline: "Voice of SOA Community Radio 90.4 FM.",
-    about: "SOA Radio Club brings student voices to the airwaves through Community Radio 90.4 FM, producing podcasts, RJ shows, interviews, cultural segments, and campus news bulletins.",
-    achievements: ["Daily Live Campus Broadcasts", "Aarambh Live Studio Coverage", "Student RJ of the Year Accolades"],
-    instagramUrl: "https://instagram.com",
-    applyFormUrl: "https://forms.google.com"
-  },
-  {
-    id: "ncc",
-    name: "NCC ITER",
-    category: "Other",
-    logoUrl: "/clubs/ncc.png",
-    tagline: "Unity and Discipline.",
-    about: "The National Cadet Corps (NCC) at ITER develops character, comradeship, discipline, leadership, and the ideals of selfless service amongst young students, fostering leadership and adventure training.",
-    achievements: ["Republic Day Camp (RDC) & Thal Sainik Camp (TSC) Participation", "State Level Drill & Shooting Honors", "Community Development and Disaster Relief Training"],
     instagramUrl: "https://instagram.com",
     applyFormUrl: "https://forms.google.com"
   }

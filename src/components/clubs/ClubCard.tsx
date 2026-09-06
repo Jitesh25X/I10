@@ -1,20 +1,10 @@
 import { useState } from 'react';
-import type { Club, Category } from '../../types';
-import { ArrowUpRight } from 'lucide-react';
+import type { Club } from '../../types';
 
 interface ClubCardProps {
   club: Club;
   onClick?: (club: Club) => void;
 }
-
-const CATEGORY_TAG_STYLES: Record<Category, string> = {
-  Technical: "bg-blue-500/15 text-blue-300 border-blue-500/30",
-  Cultural: "bg-rose-500/15 text-rose-300 border-rose-500/30",
-  Dance: "bg-purple-500/15 text-purple-300 border-purple-500/30",
-  Music: "bg-amber-500/15 text-amber-300 border-amber-500/30",
-  Literary: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
-  Other: "bg-indigo-500/15 text-indigo-300 border-indigo-500/30",
-};
 
 export const ClubCard = ({ club, onClick }: ClubCardProps) => {
   const [imgError, setImgError] = useState(false);
@@ -31,7 +21,7 @@ export const ClubCard = ({ club, onClick }: ClubCardProps) => {
     }
   };
 
-  const tagStyle = CATEGORY_TAG_STYLES[club.category] || "bg-white/10 text-text-muted border-white/20";
+  const displayName = club.shortName || club.name;
 
   return (
     <div
@@ -39,61 +29,39 @@ export const ClubCard = ({ club, onClick }: ClubCardProps) => {
       tabIndex={0}
       onClick={handleClick}
       onKeyDown={handleKeyDown}
-      className="group text-left glass-card-interactive overflow-hidden flex flex-col justify-between h-full focus:outline-none focus:ring-2 focus:ring-accent-gold/50 select-none"
+      className="group flex flex-col items-center text-center cursor-pointer focus:outline-none select-none w-full max-w-[150px] sm:max-w-[170px] mx-auto"
+      aria-label={`View details for ${displayName}`}
     >
-      <div className="p-6 flex flex-col items-center text-center flex-1">
-        {/* Logo Container with fixed size & rounded-2xl geometry */}
-        <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-white/10 border border-white/15 group-hover:border-accent-gold/40 flex items-center justify-center overflow-hidden flex-shrink-0 p-2.5 shadow-inner transition-colors duration-300 ease-smooth mb-4">
+      {/* Circular Emblem / Disc */}
+      <div className="relative w-full aspect-square rounded-full flex items-center justify-center p-3.5 sm:p-4 md:p-5 transition-transform duration-300 ease-smooth transform-gpu group-hover:scale-105 group-active:scale-95">
+        {/* Disc background with warm radial gradient & delicate border matching reference */}
+        <div className="absolute inset-0 rounded-full bg-gradient-to-b from-[#2E1D19]/90 via-[#1C1210]/95 to-[#120A09]/95 border border-[#7A4B2E]/50 shadow-[0_10px_26px_-4px_rgba(0,0,0,0.7)] group-hover:border-accent-gold/70 group-hover:shadow-[0_0_30px_rgba(242,193,78,0.28)] transition-all duration-300 ease-smooth backdrop-blur-sm" />
+
+        {/* Subtle top-left specular highlight */}
+        <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle_at_35%_25%,rgba(242,193,78,0.12)_0%,transparent_60%)] pointer-events-none" />
+
+        {/* Club Logo */}
+        <div className="relative z-10 w-full h-full flex items-center justify-center p-2.5 sm:p-3">
           {!imgError && club.logoUrl ? (
             <img 
               src={club.logoUrl} 
-              alt={`${club.name} logo`} 
-              className="w-full h-full object-contain group-hover:scale-108 transition-transform duration-350 ease-smooth transform-gpu"
+              alt={`${displayName} logo`} 
+              className="w-full h-full object-contain filter drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)] group-hover:scale-110 transition-transform duration-300 ease-smooth transform-gpu"
               onError={() => setImgError(true)}
             />
           ) : (
-            <span className="text-3xl font-bold text-accent-gold">
-              {club.name.charAt(0)}
+            <span className="text-2xl sm:text-3xl font-serif font-bold text-accent-gold">
+              {displayName.charAt(0)}
             </span>
           )}
         </div>
-        
-        {/* Club Name with fixed height container for consistent horizontal alignment */}
-        <div className="w-full h-14 flex items-center justify-center text-center px-1 mb-2">
-          <h3 className="text-base sm:text-lg font-bold text-white group-hover:text-accent-gold transition-colors duration-250 ease-smooth line-clamp-2 leading-snug">
-            {club.name}
-          </h3>
-        </div>
-
-        {/* Category Badge */}
-        <div className="mb-3">
-          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border transition-colors duration-200 ${tagStyle}`}>
-            {club.category}
-          </span>
-        </div>
-        
-        {/* Tagline with fixed height container */}
-        <div className="h-10 flex items-center justify-center text-center w-full px-1">
-          {club.tagline ? (
-            <p className="text-text-muted text-xs sm:text-sm line-clamp-2 italic leading-tight">
-              "{club.tagline}"
-            </p>
-          ) : (
-            <p className="text-text-muted/40 text-xs italic">
-              Official student club at ITER
-            </p>
-          )}
-        </div>
       </div>
 
-      {/* Card Action Footer Bar */}
-      <div className="px-5 py-3 bg-white/[0.03] group-hover:bg-white/[0.08] border-t border-white/10 flex items-center justify-between text-xs text-text-muted group-hover:text-accent-gold transition-colors duration-250 ease-smooth">
-        <span>Know your club</span>
-        <span className="inline-flex items-center font-medium gap-1">
-          View &amp; Join
-          <ArrowUpRight size={14} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-250 ease-smooth transform-gpu" />
-        </span>
-      </div>
+      {/* Club Name Label in Serif font matching reference screenshot */}
+      <h3 className="mt-2.5 sm:mt-3.5 text-xs sm:text-sm md:text-[15px] font-serif font-semibold text-white/95 group-hover:text-accent-gold transition-colors duration-250 leading-snug tracking-normal text-center line-clamp-3">
+        {displayName}
+      </h3>
     </div>
   );
 };
+

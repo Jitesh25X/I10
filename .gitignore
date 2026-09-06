@@ -21,4 +21,7 @@ dist-ssr
 *.ntvs*
 *.njsproj
 *.sln
-*.sw?
+# Scratch & temporary media
+*.pdf
+Screenshot*
+schedule_*

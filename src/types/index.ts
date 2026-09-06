@@ -9,6 +9,7 @@ export type Category =
 export type Club = {
   id: string;              // unique slug, e.g. "coding-ninjas-10x"
   name: string;
+  shortName?: string;      // clean showcase display name, e.g. "Codex", "GDGoC"
   category: Category;
   logoUrl: string;         // path under /public/clubs/
   tagline?: string;        // short one-liner for the card

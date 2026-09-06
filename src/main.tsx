@@ -3,6 +3,8 @@ import '@fontsource/bricolage-grotesque/500.css';
 import '@fontsource/bricolage-grotesque/600.css';
 import '@fontsource/bricolage-grotesque/700.css';
 import '@fontsource/bricolage-grotesque/800.css';
+import '@fontsource/playfair-display/600.css';
+import '@fontsource/playfair-display/700.css';
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
