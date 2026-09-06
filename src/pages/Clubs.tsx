@@ -97,9 +97,9 @@ export const Clubs = () => {
           })}
         </div>
 
-        {/* Club Cards Grid */}
+        {/* Club Grid */}
         {filteredClubs.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 items-stretch">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7 gap-x-4 sm:gap-x-6 md:gap-x-8 gap-y-8 sm:gap-y-10 items-start justify-items-center py-4">
             {filteredClubs.map(club => (
               <ClubCard 
                 key={club.id} 

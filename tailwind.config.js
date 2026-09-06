@@ -27,7 +27,7 @@ export default {
       },
       fontFamily: {
         sans: ['"Bricolage Grotesque"', 'sans-serif'],
-        serif: ['"Bricolage Grotesque"', 'serif'],
+        serif: ['"Playfair Display"', 'Georgia', 'serif'],
         display: ['"Bricolage Grotesque"', 'sans-serif'],
         bricolage: ['"Bricolage Grotesque"', 'sans-serif'],
       },
