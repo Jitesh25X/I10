@@ -5,6 +5,8 @@ import { Clubs } from './pages/Clubs';
 import { Agenda } from './pages/Agenda';
 import { About } from './pages/About';
 
+import { CosmicBackground } from './components/layout/CosmicBackground';
+
 function ScrollToTop() {
   const { pathname } = useLocation();
 
@@ -19,6 +21,8 @@ function App() {
   return (
     <Router>
       <ScrollToTop />
+      {/* Fixed global cosmic night-sky & aurora nebula layer consistent across all routes */}
+      <CosmicBackground />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/clubs" element={<Clubs />} />

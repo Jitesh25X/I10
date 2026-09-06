@@ -1,8 +1,6 @@
 import type { ReactNode } from 'react';
 import { Navbar } from './Navbar';
 import { Footer } from './Footer';
-import { CosmicBackground } from './CosmicBackground';
-
 export const PageWrapper = ({
   children,
   fullWidth = false,
@@ -12,7 +10,6 @@ export const PageWrapper = ({
 }) => {
   return (
     <div className="flex flex-col min-h-screen relative overflow-x-hidden">
-      <CosmicBackground />
       <Navbar />
       <main
         className={`flex-grow w-full relative z-10 ${

@@ -2,11 +2,42 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --bg-void: #06060f;
+  --bg-nebula-blue: #2b3dfa;
+  --bg-nebula-violet: #7b3ff2;
+  --accent-gold: #e8b84b;
+  --accent-gold-soft: #f5d98a;
+  --text-primary: #f4f2ec;
+  --text-muted: #b8b6c9;
+
+  /* RGB channels for Tailwind opacity modifier support */
+  --bg-void-rgb: 6 6 15;
+  --bg-nebula-blue-rgb: 43 61 250;
+  --bg-nebula-violet-rgb: 123 63 242;
+  --accent-gold-rgb: 232 184 75;
+  --accent-gold-soft-rgb: 245 217 138;
+  --text-primary-rgb: 244 242 236;
+  --text-muted-rgb: 184 182 201;
+}
+
 @layer base {
+  html {
+    background-color: var(--bg-void);
+    color: var(--text-primary);
+  }
+
   body {
-    @apply bg-background-dark text-text-primary font-sans antialiased;
-    background: linear-gradient(135deg, theme('colors.background.dark') 0%, theme('colors.background.mid') 100%);
+    @apply bg-void text-text-primary font-sans antialiased;
+    background-color: var(--bg-void);
+    background-image: radial-gradient(140% 120% at 50% 0%, #0a0a1f 0%, #06060f 65%, #05050f 100%);
     min-height: 100vh;
+    color: var(--text-primary);
+  }
+
+  ::selection {
+    background-color: rgba(232, 184, 75, 0.2);
+    color: #ffffff;
   }
 }
 
@@ -16,7 +47,7 @@
   }
   
   .glass-pill {
-    @apply bg-background-dark/85 border border-white/15 rounded-full;
+    @apply bg-void/85 border border-white/15 rounded-full;
     -webkit-backdrop-filter: blur(20px);
     backdrop-filter: blur(20px);
     box-shadow: 0 12px 36px -10px rgba(0, 0, 0, 0.6), inset 0 1px 1px 0 rgba(255, 255, 255, 0.15);
@@ -50,7 +81,7 @@
   .glass-card-interactive:hover {
     transform: translate3d(0, -4px, 0);
     @apply bg-white/[0.08] border-accent-gold/40;
-    box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.55), 0 0 25px 2px rgba(242, 193, 78, 0.12), inset 0 1px 1px 0 rgba(255, 255, 255, 0.2);
+    box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.55), 0 0 25px 2px rgba(232, 184, 75, 0.15), inset 0 1px 1px 0 rgba(255, 255, 255, 0.2);
   }
 
   .glass-card-interactive:active {
@@ -59,7 +90,7 @@
   }
 
   .glass-panel {
-    @apply bg-background-dark/90 border border-white/15 rounded-2xl;
+    @apply bg-void/90 border border-white/15 rounded-2xl;
     -webkit-backdrop-filter: blur(20px);
     backdrop-filter: blur(20px);
     box-shadow: 0 20px 48px -12px rgba(0, 0, 0, 0.7), inset 0 1px 1px 0 rgba(255, 255, 255, 0.15);
@@ -98,5 +129,21 @@
     opacity: 0 !important;
   }
 }
+
+/* Ensure footer is completely hidden or remains behind the club details pop-up modal when open */
+body:has([role="dialog"]) footer,
+body:has([aria-modal="true"]) footer,
+body.modal-open footer,
+body[data-modal-open="true"] footer,
+body:has([role="dialog"]) .site-footer,
+body:has([aria-modal="true"]) .site-footer,
+body.modal-open .site-footer,
+body[data-modal-open="true"] .site-footer {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  z-index: -10 !important;
+}
+
 
 

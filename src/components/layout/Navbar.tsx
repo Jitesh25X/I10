@@ -136,12 +136,25 @@ export const Navbar = () => {
     { name: 'About', path: '/about' },
   ];
 
+  // Mobile menu displays a 'Home' option when the user scrolls down
+  const mobileNavLinks = isScrolled
+    ? [{ name: 'Home', path: '/' }, ...navLinks]
+    : navLinks;
+
   const toggleMenu = () => setIsOpen(!isOpen);
   const closeMenu = () => setIsOpen(false);
 
   const handleLogoClick = (e: React.MouseEvent) => {
     closeMenu();
     if (location.pathname === '/') {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const handleMobileNavClick = (linkPath: string, e: React.MouseEvent) => {
+    closeMenu();
+    if (linkPath === '/' && location.pathname === '/') {
       e.preventDefault();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -271,13 +284,13 @@ export const Navbar = () => {
               className="md:hidden w-full max-w-md mx-auto mt-2 glass-panel p-2.5 pointer-events-auto overflow-hidden mobile-nav-menu"
             >
               <div className="flex flex-col space-y-1">
-                {navLinks.map((link) => {
+                {mobileNavLinks.map((link) => {
                   const isActive = location.pathname === link.path;
                   return (
                     <Link
                       key={link.name}
                       to={link.path}
-                      onClick={closeMenu}
+                      onClick={(e) => handleMobileNavClick(link.path, e)}
                       className={`block px-4 py-3 rounded-xl text-sm font-display font-semibold tracking-widest uppercase text-center transition-glass duration-200 ease-smooth active:scale-[0.98] ${
                         isActive
                           ? 'bg-accent-gold text-background-dark shadow-md'
