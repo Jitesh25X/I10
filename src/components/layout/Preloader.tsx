@@ -1,24 +1,54 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Volume2, VolumeX } from 'lucide-react';
 import { usePreloader } from '../../context/PreloaderContext';
 import { preloaderAudio } from '../../utils/preloaderAudio';
-import { AARAMBH_VECTOR_PATH, AARAMBH_VECTOR_VIEWBOX } from './aarambhLogoPath';
 
-// Official Assets:
-// 1. FULL OFFICIAL LOGO: Complete Aarambh logo updated with the new stylized "A"
-const FULL_LOGO_SRC = '/assets/aarambh-full-with-new-a.png';
+/**
+ * ============================================================================
+ * CINEMATIC PRELOADER: "THE SPARK CREATES THE BEGINNING"
+ * ============================================================================
+ * Official Aarambh Logo: sacred, unified asset (never sliced, cropped or redrawn)
+ */
+const OFFICIAL_LOGO_SRC = '/file_00000000a774820885c4e18328008380.png';
 
-// 2. ISOLATED "A" SYMBOL: Stylized Aarambh "A" extracted from Gemini_Generated_Image_2ikxcl2ikxcl2ikx.png
-const ISOLATED_A_SRC = '/assets/aarambh-isolated-a-new.png';
-
-// Optical pivot center of the new stylized "A" inside the 1983x793 coordinate canvas
-const A_TRANSFORM_ORIGIN = '18.26% 51.50%';
+/**
+ * Normalized coordinate of the Crown Star above the stylized 'A'
+ * derived mathematically from the 1983 x 793 official artwork:
+ * X: 1204 / 1983 = 60.72%
+ * Y: 70 / 793 = 8.83%
+ */
+const CROWN_STAR_X_PCT = 0.6072;
+const CROWN_STAR_Y_PCT = 0.0883;
 
 export const Preloader: React.FC = () => {
-  const { isPreloaderActive, dismissPreloader, audioEnabled, toggleAudio } = usePreloader();
+  const {
+    isPreloaderActive,
+    dismissPreloader,
+    setWebsiteEmerging,
+    audioEnabled,
+    toggleAudio,
+  } = usePreloader();
 
-  const [imagesReady, setImagesReady] = useState(false);
+  // DOM Refs for high-precision, 60/120fps continuous animation
+  const backdropRef = useRef<HTMLDivElement | null>(null);
+  const logoContainerRef = useRef<HTMLDivElement | null>(null);
+  const logoWrapperRef = useRef<HTMLDivElement | null>(null);
+  const sparkCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const shimmerSvgRef = useRef<SVGSVGElement | null>(null);
+
+  // Sound trigger flags to ensure each sound fires once at its exact moment
+  const soundPlayedRef = useRef<{
+    swipe: boolean;
+    settle: boolean;
+    glimmer: boolean;
+    emerge: boolean;
+  }>({
+    swipe: false,
+    settle: false,
+    glimmer: false,
+    emerge: false,
+  });
+
   const [prefersReducedMotion, setPrefersReducedMotion] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false;
     try {
@@ -28,467 +58,523 @@ export const Preloader: React.FC = () => {
     }
   });
 
-  // Phases:
-  // 0: Initial Screen - Cosmic void / intentionally empty (0 - 300ms)
-  // 1: Isolated A Entrance - Rotates and scales into position (300ms - 1150ms)
-  // 2: Snap into Position - Precise satisfying settle + bloom (1150ms - 1400ms)
-  // 3: Full Logo Reveal - Wordmark emerges from behind A via mask expansion (1400ms - 2250ms)
-  // 4: Seamless Handoff - Isolated A fades out into full logo underneath (2250ms - 2400ms)
-  // 5: Character Trace & Highlight - Characters are outlined & illuminated (2400ms - 3650ms)
-  // 6: Website Transition - Dissolves smoothly into live application (3650ms - 4150ms)
-  const [phase, setPhase] = useState<number>(0);
-
-  // Preload both image assets immediately to ensure instantaneous presentation
-  useEffect(() => {
-    let active = true;
-    const imgFull = new Image();
-    const imgIsolatedA = new Image();
-    let count = 0;
-
-    const onDone = () => {
-      count++;
-      if (count >= 2 && active) setImagesReady(true);
-    };
-
-    imgFull.onload = onDone;
-    imgFull.onerror = onDone;
-    imgIsolatedA.onload = onDone;
-    imgIsolatedA.onerror = onDone;
-
-    imgFull.src = FULL_LOGO_SRC;
-    imgIsolatedA.src = ISOLATED_A_SRC;
-
-    const timeout = setTimeout(() => {
-      if (active) setImagesReady(true);
-    }, 250);
-
-    return () => {
-      active = false;
-      clearTimeout(timeout);
-    };
-  }, []);
-
-  // Listen for reduced motion preference changes
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-      const listener = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches);
-      mediaQuery.addEventListener('change', listener);
-      return () => mediaQuery.removeEventListener('change', listener);
-    }
-  }, []);
-
-  // Reset phase whenever preloader is activated
+  // Body scroll lock
   useEffect(() => {
     if (isPreloaderActive) {
-      setPhase(0);
+      const original = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = original;
+      };
     }
   }, [isPreloaderActive]);
 
-  // Main animation timeline
+  // Reduced motion media query listener
   useEffect(() => {
-    if (!isPreloaderActive || !imagesReady) return;
+    if (typeof window !== 'undefined') {
+      const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+      const handler = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches);
+      mq.addEventListener('change', handler);
+      return () => mq.removeEventListener('change', handler);
+    }
+  }, []);
 
+  const handleSkip = useCallback(() => {
+    setWebsiteEmerging(true);
+    dismissPreloader();
+  }, [setWebsiteEmerging, dismissPreloader]);
+
+  // Master Animation Timeline
+  useEffect(() => {
+    if (!isPreloaderActive) return;
+
+    // Reduced motion alternative: clean, gentle fade-in and reveal
     if (prefersReducedMotion) {
-      // Accessible reduced motion timeline: gentle fade-in, hold, then dissolve
-      setPhase(4);
-      const timer = setTimeout(() => {
-        setPhase(6);
-        setTimeout(dismissPreloader, 400);
-      }, 1600);
-      return () => clearTimeout(timer);
+      const t1 = setTimeout(() => {
+        if (logoWrapperRef.current) {
+          logoWrapperRef.current.style.opacity = '1';
+          logoWrapperRef.current.style.transform = 'scale(1)';
+        }
+      }, 300);
+      const t2 = setTimeout(() => {
+        setWebsiteEmerging(true);
+        if (backdropRef.current) {
+          backdropRef.current.style.opacity = '0';
+        }
+      }, 1200);
+      const t3 = setTimeout(() => {
+        if (logoWrapperRef.current) {
+          logoWrapperRef.current.style.opacity = '0';
+        }
+      }, 2100);
+      const t4 = setTimeout(() => {
+        dismissPreloader();
+      }, 2500);
+
+      return () => {
+        clearTimeout(t1);
+        clearTimeout(t2);
+        clearTimeout(t3);
+        clearTimeout(t4);
+      };
     }
 
-    // Phase 0 -> 1: Isolated A begins entering (at 200ms)
-    const t1 = setTimeout(() => {
-      setPhase(1);
-      if (audioEnabled) preloaderAudio.playEntranceDrone();
-    }, 200);
+    let animationFrameId: number;
+    let startTime: number | null = null;
+    let isEmergingTriggered = false;
+    let isFinishedTriggered = false;
 
-    // Phase 1 -> 2: Snap into position (at 950ms)
-    const t2 = setTimeout(() => {
-      setPhase(2);
-      if (audioEnabled) preloaderAudio.playSnapChime();
-    }, 950);
+    // History buffer for spark's subtle luminous wake (Scene 3)
+    const trailHistory: { x: number; y: number; time: number }[] = [];
 
-    // Phase 2 -> 3: Full logo reveal - wordmark emerges from behind A (at 1200ms)
-    const t3 = setTimeout(() => {
-      setPhase(3);
-      if (audioEnabled) preloaderAudio.playEmergenceShimmer();
-    }, 1200);
+    const renderFrame = (now: number) => {
+      if (!startTime) {
+        startTime = now;
+      }
+      const t = (now - startTime) / 1000; // time in seconds
 
-    // Phase 3 -> 4: Seamless handoff - standalone A fades out to full logo (at 1950ms)
-    const t4 = setTimeout(() => {
-      setPhase(4);
-    }, 1950);
+      // Measure current dimensions of the logo container
+      let targetX = window.innerWidth * 0.5;
+      let targetY = window.innerHeight * 0.5;
 
-    // Phase 4 -> 5: Character Contour Trace & Typography Highlight (at 2080ms)
-    const t5 = setTimeout(() => {
-      setPhase(5);
-      if (audioEnabled) preloaderAudio.playCharacterTrace();
-    }, 2080);
+      if (logoContainerRef.current) {
+        const rect = logoContainerRef.current.getBoundingClientRect();
+        targetX = rect.left + rect.width * CROWN_STAR_X_PCT;
+        targetY = rect.top + rect.height * CROWN_STAR_Y_PCT;
+      }
 
-    // Phase 5 -> 6: Website transition - dissolve into page (at 3200ms)
-    const t6 = setTimeout(() => {
-      setPhase(6);
-    }, 3200);
+      // Starting coordinate of the spark (far left, distant, intentional)
+      const startX = Math.max(30, window.innerWidth * 0.08);
+      const startY = window.innerHeight * 0.54;
 
-    // Complete transition and unmount (at 3650ms)
-    const t7 = setTimeout(() => {
-      dismissPreloader();
-    }, 3650);
+      // ======================================================================
+      // SCENE 1: THE VOID (0.00s – 0.40s)
+      // Visual silence, nearly black (#05050A) with subtle depth.
+      // ======================================================================
+      let sparkVisible = false;
+      let sparkX = startX;
+      let sparkY = startY;
+      let sparkOpacity = 0;
+      let sparkScale = 0.4;
+
+      // ======================================================================
+      // SCENE 2: THE FIRST SPARK (0.40s – 0.65s)
+      // Tiny microscopic warm point of light appears far left, brightens slightly,
+      // hesitates with quiet anticipation.
+      // ======================================================================
+      if (t >= 0.40 && t < 0.65) {
+        sparkVisible = true;
+        const p = (t - 0.40) / 0.25;
+        // Subtle starlight breathing
+        sparkOpacity = Math.min(0.95, p * 1.2);
+        sparkScale = 0.35 + Math.sin(p * Math.PI) * 0.25;
+        sparkX = startX;
+        sparkY = startY;
+      }
+
+      // ======================================================================
+      // SCENE 3: THE SIGNATURE SWIPE (0.65s – 1.50s)
+      // Spark travels across space with an elegant calligraphic curve.
+      // Accelerates naturally with a refined, minimal luminous wake.
+      // ======================================================================
+      if (t >= 0.65 && t < 1.50) {
+        sparkVisible = true;
+        if (!soundPlayedRef.current.swipe && audioEnabled) {
+          soundPlayedRef.current.swipe = true;
+          preloaderAudio.playStarSwipe();
+        }
+
+        const p = (t - 0.65) / (1.50 - 0.65);
+        // Fluid acceleration and natural momentum
+        const ease = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+
+        sparkX = startX + (targetX - startX) * ease;
+        // Calligraphic arc: slight dip on acceleration, graceful swoop upward
+        const dip = Math.sin(p * Math.PI) * 22;
+        sparkY = targetY + (startY - targetY) * (1 - ease) + dip;
+
+        sparkOpacity = 1;
+        sparkScale = 1.0;
+
+        // Record trail history for wake drawing
+        trailHistory.push({ x: sparkX, y: sparkY, time: t });
+      }
+
+      // ======================================================================
+      // SCENE 6: THE STAR FINDS HOME (1.50s – 1.90s)
+      // Magnetic attraction to the crown star position.
+      // The final few pixels slow down smoothly, locking into the official logo.
+      // ======================================================================
+      if (t >= 1.50 && t < 1.90) {
+        sparkVisible = true;
+        if (!soundPlayedRef.current.settle && audioEnabled) {
+          soundPlayedRef.current.settle = true;
+          preloaderAudio.playSettleChime();
+        }
+
+        const p = (t - 1.50) / 0.40;
+        // Magnetic gentle ease-out to final pixels
+        const easeOut = 1 - Math.pow(1 - p, 3);
+        const lastX = startX + (targetX - startX);
+        sparkX = lastX + (targetX - lastX) * easeOut;
+        sparkY = targetY + (targetY - targetY) * (1 - easeOut);
+
+        // Trail contracts into the star
+        sparkOpacity = Math.max(0, 1 - p * 1.5);
+        sparkScale = 1.0 - p * 0.3;
+
+        trailHistory.push({ x: sparkX, y: sparkY, time: t });
+      }
+
+      // Purge trail points older than 0.18s
+      while (trailHistory.length > 0 && t - trailHistory[0].time > 0.18) {
+        trailHistory.shift();
+      }
+
+      // Draw the delicate spark and its subtle luminous wake on canvas
+      if (sparkCanvasRef.current) {
+        const canvas = sparkCanvasRef.current;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          // Handle retina display crispness
+          const dpr = window.devicePixelRatio || 1;
+          const displayW = window.innerWidth;
+          const displayH = window.innerHeight;
+          if (canvas.width !== displayW * dpr || canvas.height !== displayH * dpr) {
+            canvas.width = displayW * dpr;
+            canvas.height = displayH * dpr;
+          }
+          ctx.save();
+          ctx.setTransform(1, 0, 0, 1, 0, 0);
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.scale(dpr, dpr);
+
+          if (sparkVisible && sparkOpacity > 0.01) {
+            // Draw subtle luminous wake (energy briefly disturbing darkness)
+            if (trailHistory.length > 1) {
+              for (let i = 1; i < trailHistory.length; i++) {
+                const p1 = trailHistory[i - 1];
+                const p2 = trailHistory[i];
+                const ageRatio = (i / trailHistory.length); // 0 at tail, 1 at head
+                const trailAlpha = ageRatio * 0.5 * sparkOpacity;
+
+                ctx.beginPath();
+                ctx.moveTo(p1.x, p1.y);
+                ctx.lineTo(p2.x, p2.y);
+                ctx.strokeStyle = `rgba(242, 193, 78, ${trailAlpha})`;
+                ctx.lineWidth = 0.5 + ageRatio * 1.2;
+                ctx.lineCap = 'round';
+                ctx.stroke();
+
+                // Inner core white hairline
+                ctx.beginPath();
+                ctx.moveTo(p1.x, p1.y);
+                ctx.lineTo(p2.x, p2.y);
+                ctx.strokeStyle = `rgba(255, 255, 255, ${trailAlpha * 0.8})`;
+                ctx.lineWidth = 0.4 + ageRatio * 0.5;
+                ctx.stroke();
+              }
+            }
+
+            // Draw the point spark itself
+            const radius = 3 * sparkScale;
+            // Soft starlight aura
+            const gradient = ctx.createRadialGradient(
+              sparkX,
+              sparkY,
+              0,
+              sparkX,
+              sparkY,
+              radius * 4.5
+            );
+            gradient.addColorStop(0, `rgba(255, 255, 255, ${sparkOpacity})`);
+            gradient.addColorStop(0.3, `rgba(255, 242, 178, ${sparkOpacity * 0.7})`);
+            gradient.addColorStop(0.7, `rgba(242, 193, 78, ${sparkOpacity * 0.25})`);
+            gradient.addColorStop(1, 'rgba(242, 193, 78, 0)');
+
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(sparkX, sparkY, radius * 4.5, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Crisp starlight diamond center
+            ctx.fillStyle = `rgba(255, 255, 255, ${sparkOpacity})`;
+            ctx.beginPath();
+            ctx.arc(sparkX, sparkY, Math.max(1.2, radius * 0.7), 0, Math.PI * 2);
+            ctx.fill();
+          }
+
+          ctx.restore();
+        }
+      }
+
+      // ======================================================================
+      // SCENE 4 & 5: LOGO MATERIALIZATION & GRAVITATIONAL MOMENTUM (0.85s – 1.90s)
+      // The Aarambh logo begins appearing in the spark's wake.
+      // NOT a cheap left-to-right wipe, NO hard vertical edges.
+      // Soft, feathered, organic gradient mask where the area behind the spark
+      // transitions smoothly from darkness into the logo.
+      // Simultaneously, the unified logo has momentum: starts slightly offset (-36px)
+      // and scaled (0.96), gently resolving into exact center (0px, 1.00).
+      // ======================================================================
+      if (logoWrapperRef.current) {
+        if (t < 0.85) {
+          // Completely dark/hidden
+          logoWrapperRef.current.style.opacity = '0';
+          logoWrapperRef.current.style.transform = 'translateX(-36px) scale(0.96)';
+          logoWrapperRef.current.style.webkitMaskImage = 'none';
+          logoWrapperRef.current.style.maskImage = 'none';
+        } else if (t >= 0.85 && t < 1.85) {
+          const logoProg = (t - 0.85) / 1.0;
+          const logoEase = 1 - Math.pow(1 - logoProg, 3);
+
+          // Physical momentum: gentle deceleration into center
+          const offsetX = (1 - logoEase) * -36;
+          const scale = 0.96 + logoEase * 0.04;
+          const opacity = Math.min(1, logoProg * 1.35);
+
+          logoWrapperRef.current.style.transform = `translateX(${offsetX.toFixed(2)}px) scale(${scale.toFixed(4)})`;
+          logoWrapperRef.current.style.opacity = `${opacity.toFixed(3)}`;
+
+          // Organic feathered mask calculation:
+          // Reveal travels across the logo as the spark journeys and settles
+          const revealProg = Math.min(1.2, ((t - 0.85) / 0.95) * 1.15);
+          const maskProgress = revealProg * 100;
+
+          if (maskProgress >= 112) {
+            logoWrapperRef.current.style.webkitMaskImage = 'none';
+            logoWrapperRef.current.style.maskImage = 'none';
+          } else {
+            // Wide feather zone guarantees zero visible hard edges
+            const featherStart = Math.max(0, maskProgress - 26);
+            const featherMid = Math.max(0, maskProgress - 6);
+            const featherEnd = Math.min(100, maskProgress + 18);
+
+            const mask = `linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,1) ${featherStart.toFixed(1)}%, rgba(0,0,0,0.6) ${featherMid.toFixed(1)}%, rgba(0,0,0,0) ${featherEnd.toFixed(1)}%)`;
+
+            logoWrapperRef.current.style.webkitMaskImage = mask;
+            logoWrapperRef.current.style.maskImage = mask;
+          }
+        } else if (t >= 1.85 && t < 4.35) {
+          // Completed logo holds perfectly still in the exact center
+          logoWrapperRef.current.style.opacity = '1';
+          logoWrapperRef.current.style.transform = 'translateX(0px) scale(1)';
+          logoWrapperRef.current.style.webkitMaskImage = 'none';
+          logoWrapperRef.current.style.maskImage = 'none';
+        } else if (t >= 4.35 && t <= 4.70) {
+          // SCENE 9: THE HANDOFF
+          // Logo gently dissolves (opacity 1 -> 0, scale 1 -> 0.985)
+          const dissolveProg = (t - 4.35) / 0.35;
+          const exitOpacity = Math.max(0, 1 - dissolveProg);
+          const exitScale = 1 - dissolveProg * 0.015;
+
+          logoWrapperRef.current.style.opacity = `${exitOpacity.toFixed(3)}`;
+          logoWrapperRef.current.style.transform = `translateX(0px) scale(${exitScale.toFixed(4)})`;
+        } else if (t > 4.70) {
+          logoWrapperRef.current.style.opacity = '0';
+        }
+      }
+
+      // ======================================================================
+      // SCENE 7: THE MOMENT OF AARAMBH — ASYMMETRIC SHIMMER (2.25s – 2.80s)
+      // Star performs one sophisticated shimmer:
+      // Faint diagonal ray of light expands briefly, star brightness increases,
+      // tiny sparkle glints across top-right edge, then returns to stillness.
+      // ======================================================================
+      if (shimmerSvgRef.current) {
+        if (t >= 2.25 && t < 2.80) {
+          if (!soundPlayedRef.current.glimmer && audioEnabled) {
+            soundPlayedRef.current.glimmer = true;
+            preloaderAudio.playGlimmerSparkle();
+          }
+
+          const shimmerP = (t - 2.25) / 0.55;
+          const shimmerCurve = Math.sin(shimmerP * Math.PI);
+
+          shimmerSvgRef.current.style.opacity = `${(shimmerCurve * 0.85).toFixed(3)}`;
+          shimmerSvgRef.current.style.transform = `translate(-50%, -50%) scale(${(0.8 + shimmerCurve * 0.4).toFixed(3)})`;
+        } else {
+          shimmerSvgRef.current.style.opacity = '0';
+        }
+      }
+
+      // ======================================================================
+      // SCENE 8: THE WORLD BEHIND THE LOGO (3.10s – 4.00s)
+      // The website emerges from behind the logo.
+      // - Preloader background veil dissolves (opacity: 1 -> 0)
+      // - Website emerges from depth in App.tsx (y: 20px -> 0px, scale: 1.03 -> 1.0)
+      // - Aarambh logo remains in foreground (z-50), still, centered and sharp
+      // ======================================================================
+      if (t >= 3.10) {
+        if (!isEmergingTriggered) {
+          isEmergingTriggered = true;
+          setWebsiteEmerging(true);
+          if (audioEnabled) {
+            preloaderAudio.playWebsiteEmergence();
+          }
+        }
+
+        if (backdropRef.current) {
+          const veilP = Math.min(1, (t - 3.10) / 0.90);
+          const veilEase = 1 - Math.pow(1 - veilP, 2.5);
+          backdropRef.current.style.opacity = `${(1 - veilEase).toFixed(3)}`;
+        }
+      }
+
+      // ======================================================================
+      // PRELOADER COMPLETION (4.70s)
+      // Handoff is complete, preloader unmounts seamlessly.
+      // ======================================================================
+      if (t >= 4.70 && !isFinishedTriggered) {
+        isFinishedTriggered = true;
+        dismissPreloader();
+        return;
+      }
+
+      animationFrameId = requestAnimationFrame(renderFrame);
+    };
+
+    animationFrameId = requestAnimationFrame(renderFrame);
 
     return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-      clearTimeout(t3);
-      clearTimeout(t4);
-      clearTimeout(t5);
-      clearTimeout(t6);
-      clearTimeout(t7);
+      cancelAnimationFrame(animationFrameId);
     };
-  }, [isPreloaderActive, imagesReady, prefersReducedMotion, audioEnabled, dismissPreloader]);
+  }, [isPreloaderActive, prefersReducedMotion, audioEnabled, setWebsiteEmerging, dismissPreloader]);
+
+  if (!isPreloaderActive) return null;
 
   return (
-    <AnimatePresence>
-      {isPreloaderActive && (
-        <motion.div
-          id="aarambh-preloader"
-          key="aarambh-preloader-overlay"
-          initial={{ opacity: 1 }}
-          animate={{
-            opacity: phase >= 6 ? 0 : 1,
-            scale: phase >= 6 ? 1.02 : 1,
-          }}
-          exit={{ opacity: 0, scale: 1.03 }}
-          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-          className="fixed inset-0 z-[9999] w-screen h-screen flex items-center justify-center bg-[#05050A] overflow-hidden select-none"
-          style={{ willChange: 'opacity, transform' }}
+    <div
+      id="aarambh-preloader-root"
+      className="fixed inset-0 w-screen h-screen overflow-hidden select-none pointer-events-none"
+    >
+      {/* =====================================================================
+          BOTTOM LAYER (z-30): DARK PRELOADER ATMOSPHERE
+          Scene 1 Void: darkest website tone (#05050A) with subtle purple depth.
+          Dissolves smoothly in Scene 8 to reveal the live website behind it.
+          ===================================================================== */}
+      <div
+        ref={backdropRef}
+        id="aarambh-preloader-backdrop"
+        className="fixed inset-0 z-30 pointer-events-none transition-opacity will-change-[opacity]"
+        style={{
+          backgroundColor: '#05050A',
+          backgroundImage:
+            'radial-gradient(circle at 50% 50%, rgba(32, 18, 54, 0.32) 0%, rgba(5, 5, 10, 1) 72%)',
+          opacity: 1,
+        }}
+      />
+
+      {/* =====================================================================
+          TOP LAYER (z-50): AARAMBH LOGO & SHIMMER STAGE
+          Acts as the foreground window anchoring the viewer into the world.
+          Stationary, sharp, and dominant while the website emerges behind it!
+          ===================================================================== */}
+      <div
+        id="aarambh-preloader-stage"
+        className="fixed inset-0 z-50 pointer-events-none flex items-center justify-center p-4"
+      >
+        <div
+          ref={logoContainerRef}
+          id="aarambh-logo-container"
+          className="relative w-[min(86vw,820px)] aspect-[1983/793] flex items-center justify-center pointer-events-none select-none"
         >
-          {/* Cosmic Background Gradient & Vignette */}
-          <div className="absolute inset-0 bg-radial-vignette pointer-events-none" />
-
-          {/* Subtle Ambient Cosmic Nebula Glow */}
-          <motion.div
-            className="absolute w-[550px] h-[550px] rounded-full bg-gradient-to-tr from-accent-purple/20 via-accent-gold/10 to-transparent blur-[120px] pointer-events-none"
-            initial={{ opacity: 0 }}
-            animate={{
-              opacity: phase >= 1 ? 0.35 : 0.12,
-              scale: phase >= 2 ? [1, 1.1, 1] : 1,
-            }}
-            transition={{ duration: 1.2, ease: 'easeOut' }}
-          />
-
-          {/* Phase 2: Snap Celestial Shockwave / Light Bloom Halo */}
-          {phase >= 2 && phase < 6 && (
-            <motion.div
-              initial={{ scale: 0.4, opacity: 0 }}
-              animate={{
-                scale: [0.5, 1.7],
-                opacity: [0, 0.65, 0],
-              }}
-              transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
-              className="absolute w-64 h-64 rounded-full border border-accent-gold/40 shadow-[0_0_45px_rgba(242,193,78,0.35)] pointer-events-none"
-              style={{
-                left: 'calc(50% - 128px)',
-                top: 'calc(50% - 128px)',
-              }}
-            />
-          )}
-
-          {/* 
-            PARENT LOGO STAGE:
-            Represents the bounding box of the complete Aarambh logo (aspect 1983/793).
-            Remains perfectly centered and stationary.
-          */}
+          {/* Unified official Aarambh logo with organic reveal & momentum */}
           <div
-            id="aarambh-logo-stage"
-            className="relative w-[86vw] max-w-xl sm:max-w-2xl md:max-w-3xl lg:max-w-4xl aspect-[1983/793] flex items-center justify-center pointer-events-none"
-          >
-            {/* 
-              LAYER 1 (Lower z-index: z-10):
-              THE FULL OFFICIAL AARAMBH LOGO
-              Asset: file_00000000a774820885c4e18328008380.png
-              Stationary in its final position.
-              Revealed progressively via horizontal mask expansion toward the right.
-            */}
-            <motion.div
-              id="aarambh-full-logo-mask"
-              className="absolute inset-0 z-10 pointer-events-none overflow-hidden"
-              initial={{
-                clipPath: 'inset(0% 100% 0% 0%)',
-                opacity: 0,
-              }}
-              animate={{
-                // In Phase 0-2: Hidden
-                // In Phase 3: Unmasks from the stylized A (~36.6%) horizontally towards 100%
-                // In Phase 4+: Fully revealed
-                clipPath:
-                  phase < 3
-                    ? 'inset(0% 100% 0% 0%)'
-                    : phase === 3
-                    ? 'inset(0% 0% 0% 0%)'
-                    : 'inset(0% 0% 0% 0%)',
-                opacity: phase >= 3 ? 1 : 0,
-              }}
-              transition={{
-                clipPath: {
-                  duration: 0.75,
-                  ease: [0.16, 1, 0.3, 1],
-                },
-                opacity: {
-                  duration: 0.1,
-                },
-              }}
-            >
-              <img
-                src={FULL_LOGO_SRC}
-                alt="Aarambh Full Logo"
-                className="w-full h-full object-contain filter drop-shadow-[0_0_30px_rgba(107,70,193,0.35)]"
-                draggable={false}
-                loading="eager"
-                decoding="sync"
-              />
-            </motion.div>
-
-            {/* 
-              LAYER 2 (Higher z-index: z-20):
-              THE ISOLATED "A" SYMBOL
-              Asset: Gemini_Generated_Image_2ikxcl2ikxcl2ikx.png (extracted & matted)
-              Animates into the stage, snaps into its precise final coordinate, and visually
-              dominates during Phase 2 and 3. In Phase 4, it seamlessly hands off (fades out)
-              leaving the identical full logo visible underneath.
-            */}
-            <motion.div
-              id="aarambh-isolated-a"
-              className="absolute inset-0 z-20 pointer-events-none"
-              style={{
-                transformOrigin: A_TRANSFORM_ORIGIN,
-                willChange: 'transform, opacity, filter',
-                transform: 'translateZ(0)',
-              }}
-              initial={{
-                opacity: 0,
-                scale: 0.8,
-                rotate: -135,
-                filter: 'blur(8px) drop-shadow(0 0 35px rgba(107,70,193,0.7))',
-              }}
-              animate={{
-                // Opacity: Appears in Phase 1, stays through Phase 3, fades out in Phase 4 handoff
-                opacity:
-                  phase === 0
-                    ? 0
-                    : phase >= 1 && phase < 4
-                    ? 1
-                    : 0,
-                // Scale: Smooth entrance in Phase 1, snap settle in Phase 2, stable in Phase 3
-                scale:
-                  phase === 0
-                    ? 0.8
-                    : phase === 1
-                    ? 1.0
-                    : phase === 2
-                    ? [1.0, 1.05, 0.985, 1.0] // Precise snap settle
-                    : 1.0,
-                // Rotation: Orients from -135deg to 0deg in Phase 1
-                rotate: phase >= 1 ? 0 : -135,
-                filter:
-                  phase >= 2
-                    ? 'blur(0px) drop-shadow(0 0 30px rgba(242,193,78,0.5)) drop-shadow(0 0 55px rgba(107,70,193,0.4))'
-                    : 'blur(0px) drop-shadow(0 0 25px rgba(107,70,193,0.6))',
-              }}
-              transition={{
-                opacity: {
-                  duration: phase >= 4 ? 0.12 : 0.45,
-                  ease: 'easeOut',
-                },
-                rotate: {
-                  duration: 0.75,
-                  ease: [0.16, 1, 0.3, 1],
-                },
-                scale:
-                  phase === 2
-                    ? { duration: 0.24, ease: [0.22, 1, 0.36, 1] }
-                    : { duration: 0.75, ease: [0.16, 1, 0.3, 1] },
-                filter: { duration: 0.25 },
-              }}
-            >
-              <img
-                src={ISOLATED_A_SRC}
-                alt="Aarambh Isolated A"
-                className="w-full h-full object-contain"
-                draggable={false}
-                loading="eager"
-                decoding="sync"
-              />
-            </motion.div>
-
-            {/* 
-              PHASE 5: CHARACTER CONTOUR TRACING & TYPOGRAPHY HIGHLIGHT
-              Instead of highlighting a rectangular box, the contours of the Aarambh characters
-              are traced with a celestial laser beam, while a golden starlight sheen washes across
-              ONLY the character typography (strictly masked to the logo silhouette).
-            */}
-            {phase >= 5 && (
-              <>
-                {/* 1. TYPOGRAPHY-MASKED LIGHT WASH (No rectangular box, strictly fills the character glyphs) */}
-                <motion.div
-                  id="aarambh-character-mask-highlight"
-                  className="absolute inset-0 z-25 pointer-events-none"
-                  style={{
-                    maskImage: `url(${FULL_LOGO_SRC})`,
-                    WebkitMaskImage: `url(${FULL_LOGO_SRC})`,
-                    maskSize: 'contain',
-                    WebkitMaskSize: 'contain',
-                    maskRepeat: 'no-repeat',
-                    WebkitMaskRepeat: 'no-repeat',
-                    maskPosition: 'center',
-                    WebkitMaskPosition: 'center',
-                  }}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.15 }}
-                >
-                  {/* Radiant starlight beam passing exclusively through the character bodies */}
-                  <motion.div
-                    className="w-2/5 h-full bg-gradient-to-r from-transparent via-accent-gold/45 via-white/70 to-transparent skew-x-[-18deg] blur-md"
-                    initial={{ x: '-130%' }}
-                    animate={{ x: '280%' }}
-                    transition={{
-                      duration: 1.15,
-                      ease: [0.22, 1, 0.36, 1],
-                    }}
-                  />
-                </motion.div>
-
-                {/* 2. VECTOR CHARACTER CONTOUR TRACE (Laser-sharp tracing of the letter perimeters) */}
-                <svg
-                  id="aarambh-character-contour-svg"
-                  viewBox={AARAMBH_VECTOR_VIEWBOX}
-                  className="absolute inset-0 w-full h-full pointer-events-none z-30 overflow-visible"
-                  preserveAspectRatio="xMidYMid meet"
-                >
-                  <defs>
-                    {/* Linear gradient for the traveling trace along the letterforms */}
-                    <linearGradient id="traceBeamGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor="#A855F7" stopOpacity="0.6" />
-                      <stop offset="35%" stopColor="#F2C14E" stopOpacity="1" />
-                      <stop offset="70%" stopColor="#FFFFFF" stopOpacity="1" />
-                      <stop offset="100%" stopColor="#F2C14E" stopOpacity="0.8" />
-                    </linearGradient>
-
-                    {/* Soft stardust aura filter for character contour illumination */}
-                    <filter id="traceGlow" x="-20%" y="-20%" width="140%" height="140%">
-                      <feGaussianBlur stdDeviation="5" result="blur1" />
-                      <feGaussianBlur stdDeviation="12" result="blur2" />
-                      <feMerge>
-                        <feMergeNode in="blur2" />
-                        <feMergeNode in="blur1" />
-                        <feMergeNode in="SourceGraphic" />
-                      </feMerge>
-                    </filter>
-                  </defs>
-
-                  {/* Ambient glowing character silhouette echo */}
-                  <motion.path
-                    d={AARAMBH_VECTOR_PATH}
-                    fill="none"
-                    stroke="#F2C14E"
-                    strokeWidth="5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    filter="url(#traceGlow)"
-                    initial={{ pathLength: 0, opacity: 0 }}
-                    animate={{
-                      pathLength: [0, 1],
-                      opacity: [0, 0.65, 0.45, 0],
-                    }}
-                    transition={{
-                      pathLength: { duration: 1.1, ease: [0.22, 1, 0.36, 1] },
-                      opacity: { duration: 1.25, times: [0, 0.2, 0.8, 1], ease: 'easeOut' },
-                    }}
-                  />
-
-                  {/* Razor-sharp luminous starlight contour trace */}
-                  <motion.path
-                    d={AARAMBH_VECTOR_PATH}
-                    fill="none"
-                    stroke="url(#traceBeamGradient)"
-                    strokeWidth="2.25"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    initial={{ pathLength: 0, opacity: 0 }}
-                    animate={{
-                      pathLength: [0, 1],
-                      opacity: [0, 1, 0.95, 0],
-                    }}
-                    transition={{
-                      pathLength: { duration: 1.1, ease: [0.22, 1, 0.36, 1] },
-                      opacity: { duration: 1.25, times: [0, 0.15, 0.85, 1], ease: 'easeOut' },
-                    }}
-                  />
-                </svg>
-
-                {/* 3. CELESTIAL ARC APEX STARLIGHT FLARE (Diamond 4-pointed sparkle) */}
-                <motion.div
-                  className="absolute z-35 pointer-events-none"
-                  style={{
-                    left: '58.5%',
-                    top: '8.5%',
-                    transform: 'translate(-50%, -50%)',
-                  }}
-                  initial={{ scale: 0, opacity: 0, rotate: 0 }}
-                  animate={{
-                    scale: [0, 1.4, 1.1, 0],
-                    opacity: [0, 1, 0.85, 0],
-                    rotate: [0, 45],
-                  }}
-                  transition={{
-                    duration: 1.05,
-                    times: [0, 0.35, 0.75, 1],
-                    ease: 'easeOut',
-                  }}
-                >
-                  {/* Central radiant diamond core */}
-                  <div className="w-3.5 h-3.5 rounded-full bg-white shadow-[0_0_18px_6px_rgba(242,193,78,0.95)]" />
-                  {/* Horizontal diffraction ray */}
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-[2px] bg-gradient-to-r from-transparent via-white to-transparent" />
-                  {/* Vertical diffraction ray */}
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[2px] h-12 bg-gradient-to-b from-transparent via-white to-transparent" />
-                </motion.div>
-              </>
-            )}
-          </div>
-
-          {/* Subtle Orientation Label */}
-          <motion.div
-            className="absolute bottom-12 text-center pointer-events-none"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{
-              opacity: phase >= 1 && phase < 5 ? 0.6 : 0,
-              y: phase >= 1 && phase < 5 ? 0 : 10,
+            ref={logoWrapperRef}
+            id="aarambh-logo-wrapper"
+            className="relative w-full h-full flex items-center justify-center will-change-[transform,opacity]"
+            style={{
+              opacity: 0,
+              transform: 'translateX(-36px) scale(0.96)',
             }}
-            transition={{ duration: 0.35 }}
           >
-            <span className="text-[11px] sm:text-xs font-display font-medium tracking-[0.3em] uppercase text-text-muted">
-              Orientation 2026
-            </span>
-          </motion.div>
+            <img
+              src={OFFICIAL_LOGO_SRC}
+              alt="Aarambh"
+              className="w-full h-full object-contain select-none pointer-events-none filter drop-shadow-[0_0_28px_rgba(107,70,193,0.32)]"
+              draggable={false}
+              loading="eager"
+            />
 
-          {/* Audio Mute/Unmute Control */}
-          <div className="absolute top-6 right-6 z-50 flex items-center gap-3">
-            <button
-              id="preloader-audio-toggle"
-              onClick={toggleAudio}
-              className="p-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white/60 hover:text-white transition-colors duration-200 backdrop-blur-md"
-              title={audioEnabled ? 'Mute audio' : 'Enable audio'}
-              aria-label={audioEnabled ? 'Mute audio' : 'Enable audio'}
+            {/* Asymmetric Shimmer Overlay on the Crown Star (Scene 7) */}
+            <svg
+              ref={shimmerSvgRef}
+              viewBox="0 0 100 100"
+              className="absolute pointer-events-none select-none will-change-[opacity,transform]"
+              style={{
+                left: `${(CROWN_STAR_X_PCT * 100).toFixed(2)}%`,
+                top: `${(CROWN_STAR_Y_PCT * 100).toFixed(2)}%`,
+                width: '14%',
+                aspectRatio: '1 / 1',
+                transform: 'translate(-50%, -50%)',
+                opacity: 0,
+              }}
+              fill="none"
             >
-              {audioEnabled ? <Volume2 className="w-4 h-4 text-accent-gold" /> : <VolumeX className="w-4 h-4" />}
-            </button>
+              {/* Slender diagonal ray of light (at 38° angle) */}
+              <g transform="rotate(38 50 50)">
+                <path
+                  d="M10 50 L48 48.8 L90 50 L48 51.2 Z"
+                  fill="url(#diagonal-ray-grad)"
+                />
+              </g>
+
+              {/* Delicate starlight micro-glint along top-right facet */}
+              <circle cx="56" cy="44" r="2.2" fill="#FFFFFF" opacity="0.9" />
+
+              <defs>
+                <linearGradient id="diagonal-ray-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#F2C14E" stopOpacity="0" />
+                  <stop offset="35%" stopColor="#FFF9D2" stopOpacity="0.75" />
+                  <stop offset="50%" stopColor="#FFFFFF" stopOpacity="0.95" />
+                  <stop offset="65%" stopColor="#FFF9D2" stopOpacity="0.75" />
+                  <stop offset="100%" stopColor="#F2C14E" stopOpacity="0" />
+                </linearGradient>
+              </defs>
+            </svg>
           </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+        </div>
+      </div>
+
+      {/* =====================================================================
+          SPARK & LUMINOUS WAKE CANVAS (z-55)
+          Hardware-accelerated continuous stroke for the travelling spark
+          ===================================================================== */}
+      <canvas
+        ref={sparkCanvasRef}
+        id="aarambh-spark-canvas"
+        className="fixed inset-0 z-[55] pointer-events-none w-full h-full"
+      />
+
+      {/* =====================================================================
+          DISCREET AUDIO & ACCESSIBILITY CONTROLS (z-60)
+          ===================================================================== */}
+      <div className="absolute top-6 right-6 z-[60] flex items-center gap-3 pointer-events-auto">
+        <button
+          id="preloader-audio-toggle"
+          onClick={toggleAudio}
+          className="p-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white/50 hover:text-white transition-colors duration-200 backdrop-blur-sm"
+          title={audioEnabled ? 'Mute audio' : 'Enable audio'}
+          aria-label={audioEnabled ? 'Mute audio' : 'Enable audio'}
+        >
+          {audioEnabled ? (
+            <Volume2 className="w-4 h-4 text-accent-gold" />
+          ) : (
+            <VolumeX className="w-4 h-4" />
+          )}
+        </button>
+      </div>
+
+      <div className="absolute bottom-6 right-6 z-[60] pointer-events-auto">
+        <button
+          id="preloader-skip-button"
+          onClick={handleSkip}
+          className="text-[11px] tracking-[0.2em] uppercase font-mono text-white/20 hover:text-white/60 transition-colors duration-200 px-3 py-1.5 rounded"
+        >
+          Skip
+        </button>
+      </div>
+    </div>
   );
 };
